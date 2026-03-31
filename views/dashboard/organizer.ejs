@@ -1,12 +1,14 @@
 <%- include('../partials/header', { title: 'Organizer Dashboard', error: messages.error, success: messages.success }) %>
 
 <div class="page-container">
-  <div class="dash-header">
+
+  <!-- Header -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;flex-wrap:wrap;gap:16px">
     <div>
-      <h1>Organizer Dashboard 🚀</h1>
+      <h1 style="font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:6px">Organizer Dashboard <span style="background:linear-gradient(to right,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🚀</span></h1>
       <p style="color:var(--text-muted)">Manage your competitions, jobs, and applicants</p>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
       <a href="/competitions/create" class="btn btn-outline btn-sm"><i class="fas fa-trophy"></i> New Competition</a>
       <a href="/jobs/create" class="btn btn-outline btn-sm"><i class="fas fa-briefcase"></i> Post Job</a>
       <a href="/assessments/create" class="btn btn-primary btn-sm"><i class="fas fa-clipboard-check"></i> New Assessment</a>
@@ -14,183 +16,185 @@
   </div>
 
   <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#ede9fe"><i class="fas fa-briefcase" style="color:#7c3aed"></i></div>
-      <div><div class="stat-val"><%= stats.jobs %></div><div class="stat-label">Jobs Posted</div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px">
+    <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;background:rgba(139,92,246,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#a78bfa"><i class="fas fa-briefcase"></i></div>
+      <div><div style="font-size:2rem;font-weight:800;color:#fff;line-height:1"><%= stats.jobs %></div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Jobs Posted</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#dbeafe"><i class="fas fa-trophy" style="color:#2563eb"></i></div>
-      <div><div class="stat-val"><%= stats.competitions %></div><div class="stat-label">Competitions</div></div>
+    <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;background:rgba(59,130,246,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#93c5fd"><i class="fas fa-trophy"></i></div>
+      <div><div style="font-size:2rem;font-weight:800;color:#fff;line-height:1"><%= stats.competitions %></div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Competitions</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#d1fae5"><i class="fas fa-file-alt" style="color:#059669"></i></div>
-      <div><div class="stat-val"><%= stats.totalApplications %></div><div class="stat-label">Applications</div></div>
+    <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;background:rgba(16,185,129,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#6ee7b7"><i class="fas fa-file-alt"></i></div>
+      <div><div style="font-size:2rem;font-weight:800;color:#fff;line-height:1"><%= stats.totalApplications %></div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Applications</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#fef3c7"><i class="fas fa-users" style="color:#d97706"></i></div>
-      <div><div class="stat-val"><%= stats.teams %></div><div class="stat-label">Teams Registered</div></div>
+    <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:16px;padding:24px;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;background:rgba(245,158,11,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fcd34d"><i class="fas fa-users"></i></div>
+      <div><div style="font-size:2rem;font-weight:800;color:#fff;line-height:1"><%= stats.teams %></div><div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Teams Registered</div></div>
     </div>
   </div>
 
-  <div class="dash-grid-3">
-
-    <!-- Recent Applications -->
-    <div class="dash-section" style="grid-column:1/3">
-      <div class="dash-section-header">
-        <h2><i class="fas fa-inbox"></i> Recent Applications</h2>
-      </div>
-      <% if (recentApplications.length === 0) { %>
-        <div class="empty-state" style="padding:30px"><i class="fas fa-inbox"></i><p>No applications yet</p></div>
-      <% } else { %>
-      <div style="overflow-x:auto">
-        <table class="manage-table">
-          <thead><tr><th>Applicant</th><th>Email</th><th>Job</th><th>Skills</th><th>Assessment</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-            <% recentApplications.forEach(app => { %>
-            <tr>
-              <td><strong><%= app.applicant.name %></strong></td>
-              <td style="font-size:0.82rem"><%= app.applicant.email %></td>
-              <td><a href="/jobs/<%= app.job._id %>"><%= app.job.title %></a></td>
-              <td style="font-size:0.82rem"><%= (app.applicant.skills || []).slice(0,3).join(', ') || '—' %></td>
-              <td><%= app.assessmentCompleted ? app.assessmentScore + ' pts' : '—' %></td>
-              <td><span class="badge badge-<%= app.status %>"><%= app.status %></span></td>
-              <td>
-                <form action="/jobs/applications/<%= app._id %>/status" method="POST" style="display:flex;gap:4px">
-                  <select name="status" style="padding:4px 6px;font-size:0.8rem;border-radius:6px;border:1px solid var(--border)">
-                    <option value="applied" <%= app.status==='applied'?'selected':'' %>>Applied</option>
-                    <option value="shortlisted" <%= app.status==='shortlisted'?'selected':'' %>>Shortlisted</option>
-                    <option value="rejected" <%= app.status==='rejected'?'selected':'' %>>Rejected</option>
-                    <option value="hired" <%= app.status==='hired'?'selected':'' %>>Hired</option>
-                  </select>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                </form>
-              </td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-      <% } %>
+  <!-- Recent Applications (full width) -->
+  <div style="background:rgba(30,41,59,0.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;margin-bottom:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <h2 style="font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px"><i class="fas fa-inbox" style="color:var(--primary-light)"></i> Recent Applications</h2>
     </div>
+    <% if (recentApplications.length === 0) { %>
+      <div style="text-align:center;padding:40px;color:var(--text-muted)">
+        <i class="fas fa-inbox" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:12px"></i>
+        <p>No applications yet</p>
+      </div>
+    <% } else { %>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:rgba(0,0,0,0.2)">
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Applicant</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Job</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Skills</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Assessment</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Status</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentApplications.forEach(app => { %>
+          <tr style="border-top:1px solid rgba(255,255,255,0.04);transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:14px 20px">
+              <div style="font-weight:600;color:#fff;font-size:0.9rem"><%= app.applicant.name %></div>
+              <div style="font-size:0.78rem;color:var(--text-muted)"><%= app.applicant.email %></div>
+            </td>
+            <td style="padding:14px 20px"><a href="/jobs/<%= app.job._id %>" style="color:var(--primary-light);font-size:0.9rem"><%= app.job.title %></a></td>
+            <td style="padding:14px 20px;font-size:0.82rem;color:var(--text-muted)"><%= (app.applicant.skills||[]).slice(0,3).join(', ')||'—' %></td>
+            <td style="padding:14px 20px;font-size:0.85rem;color:<%= app.assessmentCompleted?'#6ee7b7':'var(--text-muted)' %>"><%= app.assessmentCompleted ? app.assessmentScore+' pts' : '—' %></td>
+            <td style="padding:14px 20px"><span class="badge badge-<%= app.status %>"><%= app.status %></span></td>
+            <td style="padding:14px 20px">
+              <form action="/jobs/applications/<%= app._id %>/status" method="POST" style="display:flex;gap:6px;align-items:center">
+                <select name="status" style="padding:6px 10px;font-size:0.8rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.4);color:#fff;min-width:110px">
+                  <option value="applied" <%= app.status==='applied'?'selected':'' %>>Applied</option>
+                  <option value="shortlisted" <%= app.status==='shortlisted'?'selected':'' %>>Shortlisted</option>
+                  <option value="rejected" <%= app.status==='rejected'?'selected':'' %>>Rejected</option>
+                  <option value="hired" <%= app.status==='hired'?'selected':'' %>>Hired</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Jobs + Competitions row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
 
     <!-- My Jobs -->
-    <div class="dash-section">
-      <div class="dash-section-header">
-        <h2><i class="fas fa-briefcase"></i> My Jobs</h2>
+    <div style="background:rgba(30,41,59,0.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <h2 style="font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px"><i class="fas fa-briefcase" style="color:var(--primary-light)"></i> My Jobs</h2>
         <a href="/jobs/my-jobs" class="btn btn-outline btn-sm">View All</a>
       </div>
       <% if (jobs.length === 0) { %>
-        <div class="empty-state" style="padding:20px"><p>No jobs posted yet</p></div>
+        <div style="text-align:center;padding:30px;color:var(--text-muted)"><p>No jobs posted yet</p><a href="/jobs/create" class="btn btn-primary btn-sm" style="margin-top:12px">Post a Job</a></div>
       <% } else { %>
-      <div class="dash-list">
         <% jobs.slice(0,5).forEach(j => { %>
-        <div class="dash-item">
-          <div class="dash-item-left">
-            <div class="dash-item-icon"><%= j.company.charAt(0) %></div>
-            <div>
-              <div class="dash-item-title"><a href="/jobs/<%= j._id %>" style="color:inherit"><%= j.title %></a></div>
-              <div class="dash-item-sub"><%= j.company %> &bull; <span class="badge badge-<%= j.status %>" style="font-size:0.7rem"><%= j.status %></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.04);gap:12px;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(30,41,59,0.5));border:1px solid rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;flex-shrink:0"><%= j.company.charAt(0).toUpperCase() %></div>
+            <div style="min-width:0">
+              <div style="font-weight:600;color:#fff;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><a href="/jobs/<%= j._id %>" style="color:#fff"><%= j.title %></a></div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px"><%= j.company %> &bull; <span class="badge badge-<%= j.status %>" style="font-size:0.65rem;padding:2px 6px"><%= j.status %></span></div>
             </div>
           </div>
-          <div class="dash-item-right">
-            <div style="font-size:0.82rem;color:var(--text-muted)"><%= j.applications.length %> apps</div>
-            <a href="/jobs/<%= j._id %>/manage" class="btn btn-outline btn-sm" style="margin-top:4px">Manage</a>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:0.75rem;color:var(--text-muted)"><%= j.applications.length %> apps</div>
+            <a href="/jobs/<%= j._id %>/manage" class="btn btn-outline btn-sm" style="margin-top:4px;font-size:0.75rem;padding:4px 10px">Manage</a>
           </div>
         </div>
         <% }) %>
-      </div>
       <% } %>
     </div>
 
     <!-- My Competitions -->
-    <div class="dash-section">
-      <div class="dash-section-header">
-        <h2><i class="fas fa-trophy"></i> My Competitions</h2>
+    <div style="background:rgba(30,41,59,0.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <h2 style="font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px"><i class="fas fa-trophy" style="color:#fcd34d"></i> My Competitions</h2>
         <a href="/competitions/my" class="btn btn-outline btn-sm">View All</a>
       </div>
       <% if (competitions.length === 0) { %>
-        <div class="empty-state" style="padding:20px"><p>No competitions yet</p></div>
+        <div style="text-align:center;padding:30px;color:var(--text-muted)"><p>No competitions yet</p><a href="/competitions/create" class="btn btn-primary btn-sm" style="margin-top:12px">Create One</a></div>
       <% } else { %>
-      <div class="dash-list">
         <% competitions.slice(0,5).forEach(c => { %>
-        <div class="dash-item">
-          <div class="dash-item-left">
-            <div class="dash-item-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444)"><i class="fas fa-trophy" style="font-size:1rem"></i></div>
-            <div>
-              <div class="dash-item-title"><a href="/competitions/<%= c._id %>" style="color:inherit"><%= c.title %></a></div>
-              <div class="dash-item-sub"><span class="badge badge-<%= c.type %>"><%= c.type %></span> &bull; <%= c.registrations.length %> teams</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.04);gap:12px;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,rgba(245,158,11,0.3),rgba(239,68,68,0.2));border:1px solid rgba(245,158,11,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fcd34d;font-size:0.9rem;flex-shrink:0"><i class="fas fa-trophy"></i></div>
+            <div style="min-width:0">
+              <div style="font-weight:600;color:#fff;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><a href="/competitions/<%= c._id %>" style="color:#fff"><%= c.title %></a></div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px"><span class="badge badge-<%= c.type %>" style="font-size:0.65rem;padding:2px 6px"><%= c.type %></span> &bull; <%= c.registrations.length %> teams</div>
             </div>
           </div>
-          <div class="dash-item-right">
-            <a href="/competitions/<%= c._id %>/edit" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
-          </div>
+          <a href="/competitions/<%= c._id %>/edit" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:4px 10px"><i class="fas fa-edit"></i></a>
         </div>
         <% }) %>
-      </div>
       <% } %>
     </div>
-
-    <!-- Registered Teams -->
-    <div class="dash-section" style="grid-column:1/3">
-      <div class="dash-section-header">
-        <h2><i class="fas fa-users"></i> Registered Teams</h2>
-      </div>
-      <% if (teams.length === 0) { %>
-        <div class="empty-state" style="padding:20px"><p>No teams registered yet</p></div>
-      <% } else { %>
-      <div style="overflow-x:auto">
-        <table class="manage-table">
-          <thead><tr><th>Team</th><th>Competition</th><th>Leader</th><th>Members</th><th>Status</th></tr></thead>
-          <tbody>
-            <% teams.forEach(team => { %>
-            <tr>
-              <td><strong><%= team.name %></strong></td>
-              <td><a href="/competitions/<%= team.competition._id %>"><%= team.competition.title %></a></td>
-              <td><%= team.leader.name %><br><small style="color:var(--text-muted)"><%= team.leader.email %></small></td>
-              <td>
-                <div style="display:flex;flex-wrap:wrap;gap:4px">
-                  <% team.members.forEach(m => { %>
-                  <span class="badge badge-<%= m.status %>" style="font-size:0.72rem">
-                    <%= m.user ? m.user.name : m.email %> (<%= m.status %>)
-                  </span>
-                  <% }) %>
-                  <% if (team.members.length === 0) { %><span style="color:var(--text-muted);font-size:0.82rem">Solo</span><% } %>
-                </div>
-              </td>
-              <td><span class="badge badge-active">registered</span></td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-      <% } %>
-    </div>
-
   </div>
+
+  <!-- Registered Teams (full width) -->
+  <div style="background:rgba(30,41,59,0.4);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden">
+    <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <h2 style="font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px"><i class="fas fa-users" style="color:var(--primary-light)"></i> Registered Teams</h2>
+    </div>
+    <% if (teams.length === 0) { %>
+      <div style="text-align:center;padding:40px;color:var(--text-muted)"><i class="fas fa-users" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:12px"></i><p>No teams registered yet</p></div>
+    <% } else { %>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:rgba(0,0,0,0.2)">
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Team</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Competition</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Leader</th>
+            <th style="padding:12px 20px;text-align:left;font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Members</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% teams.forEach(team => { %>
+          <tr style="border-top:1px solid rgba(255,255,255,0.04);transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:14px 20px;font-weight:600;color:#fff;font-size:0.9rem"><%= team.name %></td>
+            <td style="padding:14px 20px"><a href="/competitions/<%= team.competition._id %>" style="color:var(--primary-light);font-size:0.9rem"><%= team.competition.title %></a></td>
+            <td style="padding:14px 20px">
+              <div style="font-size:0.88rem;color:#fff"><%= team.leader.name %></div>
+              <div style="font-size:0.75rem;color:var(--text-muted)"><%= team.leader.email %></div>
+            </td>
+            <td style="padding:14px 20px">
+              <div style="display:flex;flex-wrap:wrap;gap:4px">
+                <% team.members.forEach(m => { %>
+                <span class="badge badge-<%= m.status %>" style="font-size:0.72rem">
+                  <%= m.user ? m.user.name : m.email %> (<%= m.status %>)
+                </span>
+                <% }) %>
+                <% if (team.members.length === 0) { %><span style="color:var(--text-muted);font-size:0.82rem">Solo</span><% } %>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+
 </div>
 
 <style>
-.dash-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px; flex-wrap:wrap; gap:16px; }
-.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:30px; }
-.stat-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:20px; display:flex; align-items:center; gap:16px; }
-.stat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-.stat-val { font-size:1.8rem; font-weight:800; line-height:1; }
-.stat-label { font-size:0.82rem; color:var(--text-muted); margin-top:2px; }
-.dash-grid-3 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-.dash-section { background:#fff; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-.dash-section-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); }
-.dash-section-header h2 { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; }
-.dash-section-header h2 i { color:var(--primary); }
-.dash-list { display:flex; flex-direction:column; }
-.dash-item { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; border-bottom:1px solid #f1f5f9; gap:12px; }
-.dash-item:last-child { border-bottom:none; }
-.dash-item-left { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
-.dash-item-icon { width:38px; height:38px; background:linear-gradient(135deg,var(--primary),#8b5cf6); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.95rem; flex-shrink:0; }
-.dash-item-title { font-weight:600; font-size:0.9rem; }
-.dash-item-sub { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
-.dash-item-right { text-align:right; flex-shrink:0; }
-@media(max-width:900px) { .stats-row{grid-template-columns:repeat(2,1fr)} .dash-grid-3{grid-template-columns:1fr} .dash-section[style*="grid-column"]{grid-column:1!important} }
+@media(max-width:900px){
+  div[style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+  div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+}
 </style>
 
 <%- include('../partials/footer') %>
