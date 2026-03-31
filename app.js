@@ -24,7 +24,6 @@ app.use(session({
 }));
 app.use(flash());
 
-// Globals for all views
 app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.success = req.flash('success');
@@ -32,13 +31,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
 app.use('/auth', require('./routes/auth'));
+app.use('/dashboard', require('./routes/dashboard'));
 app.use('/competitions', require('./routes/competitions'));
 app.use('/jobs', require('./routes/jobs'));
 app.use('/assessments', require('./routes/assessments'));
 
-// Home
 app.get('/', async (req, res) => {
   try {
     const Competition = require('./models/Competition');
@@ -51,14 +49,12 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   req.flash('error', 'Something went wrong');
   res.redirect('back');
 });
 
-// 404
 app.use((req, res) => res.status(404).render('404', {}));
 
 module.exports = app;

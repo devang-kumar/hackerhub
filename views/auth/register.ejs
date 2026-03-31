@@ -1,12 +1,27 @@
-<%- include('../partials/header', { title: 'Register', error: error, success: success }) %>
+<%- include('../partials/header', { title: 'Create Account', error: error, success: success }) %>
 
 <div class="auth-page">
-  <div class="auth-card">
+  <div class="auth-card" style="max-width:520px">
     <div class="auth-header">
-      <h2>Create Account</h2>
-      <p>Join HackHub and start competing</p>
+      <h2>Join HackHub</h2>
+      <p>Create your account to get started</p>
     </div>
-    <form action="/auth/register" method="POST" class="auth-form">
+
+    <!-- Account Type Toggle -->
+    <div class="account-toggle">
+      <button type="button" class="toggle-btn active" id="btn-user" onclick="switchType('user')">
+        <i class="fas fa-user"></i> Participant
+      </button>
+      <button type="button" class="toggle-btn" id="btn-organizer" onclick="switchType('organizer')">
+        <i class="fas fa-building"></i> Organizer
+      </button>
+    </div>
+    <div class="toggle-desc" id="desc-user">Register for hackathons, apply to jobs, join competitions.</div>
+    <div class="toggle-desc" style="display:none" id="desc-organizer">Post competitions, jobs, internships and manage applicants.</div>
+
+    <form action="/auth/register" method="POST" class="auth-form" id="regForm">
+      <input type="hidden" name="role" id="roleInput" value="user"/>
+
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" name="name" placeholder="Your full name" required/>
@@ -20,10 +35,47 @@
         <input type="password" name="password" placeholder="Min 6 characters" minlength="6" required/>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      <!-- Organizer-only fields -->
+      <div id="org-fields" style="display:none">
+        <div class="org-divider">Organization Details</div>
+        <div class="form-group">
+          <label>Organization / Company Name *</label>
+          <input type="text" name="organization" id="orgName" placeholder="e.g. TechCorp, IIT Delhi"/>
+        </div>
+        <div class="form-group">
+          <label>Website (optional)</label>
+          <input type="text" name="orgWebsite" placeholder="https://yourorg.com"/>
+        </div>
+        <div class="form-group">
+          <label>About your Organization</label>
+          <textarea name="orgDescription" rows="3" placeholder="Brief description of your organization..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Create Account</button>
     </form>
     <p class="auth-switch">Already have an account? <a href="/auth/login">Login</a></p>
   </div>
 </div>
+
+<style>
+.account-toggle { display:flex; gap:0; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:12px; }
+.toggle-btn { flex:1; padding:12px; background:#fff; border:none; cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text-muted); transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.toggle-btn.active { background:var(--primary); color:#fff; }
+.toggle-desc { font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; padding:8px 12px; background:#f8fafc; border-radius:8px; }
+.org-divider { font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); margin:8px 0 16px; padding-bottom:8px; border-bottom:2px solid var(--primary); }
+</style>
+
+<script>
+function switchType(type) {
+  document.getElementById('roleInput').value = type;
+  document.getElementById('btn-user').classList.toggle('active', type === 'user');
+  document.getElementById('btn-organizer').classList.toggle('active', type === 'organizer');
+  document.getElementById('org-fields').style.display = type === 'organizer' ? 'block' : 'none';
+  document.getElementById('desc-user').style.display = type === 'user' ? 'block' : 'none';
+  document.getElementById('desc-organizer').style.display = type === 'organizer' ? 'block' : 'none';
+  document.getElementById('orgName').required = type === 'organizer';
+}
+</script>
 
 <%- include('../partials/footer') %>

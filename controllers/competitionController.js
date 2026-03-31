@@ -118,7 +118,11 @@ exports.register = async (req, res) => {
       const toInvite = emails.slice(0, maxMembers);
       for (const email of toInvite) {
         const token = uuidv4();
-        members.push({ email, status: 'pending', inviteToken: token });
+        // Check if user already exists on platform
+        const existingUser = await require('../models/User').findOne({ email });
+        const memberEntry = { email, status: 'pending', inviteToken: token };
+        if (existingUser) memberEntry.user = existingUser._id;
+        members.push(memberEntry);
         await mailer.sendTeamInvite(email, teamName, competition.title, token);
       }
     }

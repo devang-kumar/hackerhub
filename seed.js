@@ -6,6 +6,9 @@ const User = require('./models/User');
 const Competition = require('./models/Competition');
 const Course = require('./models/Course');
 const Mentor = require('./models/Mentor');
+const Job = require('./models/Job');
+const Practice = require('./models/Practice');
+const Assessment = require('./models/Assessment');
 
 async function seed() {
   await connectDB();
@@ -21,6 +24,9 @@ async function seed() {
   await Competition.deleteMany({ tags: 'seeded' });
   await Course.deleteMany({ banner: { $regex: '^/seed/' } });
   await Mentor.deleteMany({});  // clean all mentors so we recreate fresh ones
+  await Job.deleteMany({});
+  await Practice.deleteMany({});
+  await Assessment.deleteMany({});
 
   // ─── Seed Organizer User ───
   const organizer = await User.create({
@@ -370,6 +376,161 @@ async function seed() {
     },
   ]);
   console.log('✅ 5 Courses/Projects seeded');
+
+  // ─── Seed Practice Problems ───
+  await Practice.create([
+    {
+      title: 'Two Sum',
+      description: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
+      difficulty: 'Easy',
+      tags: ['Array', 'Hash Table'],
+      problemStatement: 'You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.',
+      inputFormat: 'First line contains n (size of array). Second line contains n integers. Third line contains the target sum.',
+      outputFormat: 'Print two space-separated integers representing the indices.',
+      sampleInput: '4\n2 7 11 15\n9',
+      sampleOutput: '0 1',
+      score: 10,
+      author: organizer._id
+    },
+    {
+      title: 'Valid Palindrome',
+      description: 'A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.',
+      difficulty: 'Easy',
+      tags: ['String', 'Two Pointers'],
+      problemStatement: 'Given a string s, return true if it is a palindrome, or false otherwise.',
+      inputFormat: 'A single string s.',
+      outputFormat: 'Print "true" or "false".',
+      sampleInput: 'A man, a plan, a canal: Panama',
+      sampleOutput: 'true',
+      score: 10,
+      author: organizer._id
+    },
+    {
+      title: 'Longest Substring Without Repeating Characters',
+      description: 'Given a string s, find the length of the longest substring without repeating characters.',
+      difficulty: 'Medium',
+      tags: ['String', 'Sliding Window', 'Hash Table'],
+      problemStatement: 'Find the maximum length of a contiguous substring that has all unique characters.',
+      inputFormat: 'A single string s.',
+      outputFormat: 'An integer representing the length.',
+      sampleInput: 'abcabcbb',
+      sampleOutput: '3',
+      score: 20,
+      author: organizer._id
+    },
+    {
+      title: 'Merge Intervals',
+      description: 'Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.',
+      difficulty: 'Medium',
+      tags: ['Array', 'Sorting'],
+      problemStatement: 'Return an array of the non-overlapping intervals that cover all the intervals in the input.',
+      inputFormat: 'First line n (number of intervals). Next n lines contain two integers each (start and end).',
+      outputFormat: 'Print each merged interval on a new line as "start end".',
+      sampleInput: '4\n1 3\n2 6\n8 10\n15 18',
+      sampleOutput: '1 6\n8 10\n15 18',
+      score: 20,
+      author: organizer._id
+    }
+  ]);
+  console.log('✅ 4 Practice Problems seeded');
+
+  // ─── Seed Assessments ───
+  const sdeAssessment = await Assessment.create({
+    title: 'Software Engineer Assessment',
+    description: 'A comprehensive test covering Data Structures, Algorithms, and System Design basics.',
+    organizer: organizer._id,
+    duration: 60,
+    proctored: true,
+    linkedTo: 'job',
+    questions: [
+      { text: 'What is the time complexity of binary search?', type: 'mcq', options: ['O(n)', 'O(log n)', 'O(n^2)', 'O(1)'], correctAnswer: 'O(log n)', marks: 5 },
+      { text: 'Which data structure uses LIFO?', type: 'mcq', options: ['Queue', 'Stack', 'Tree', 'Graph'], correctAnswer: 'Stack', marks: 5 },
+      { text: 'What does ACID stand for in databases?', type: 'mcq', options: ['Atomicity, Consistency, Isolation, Durability', 'Active, Concurrent, Isolated, Dynamic', 'All, Connected, Independent, Direct', 'None of the above'], correctAnswer: 'Atomicity, Consistency, Isolation, Durability', marks: 5 },
+      { text: 'Which sorting algorithm has the best average-case time complexity?', type: 'mcq', options: ['Bubble Sort', 'Insertion Sort', 'Merge Sort', 'Selection Sort'], correctAnswer: 'Merge Sort', marks: 5 }
+    ]
+  });
+
+  const dataAssessment = await Assessment.create({
+    title: 'Data Science Internship Test',
+    description: 'Test your knowledge on Python, Machine Learning basics, and Statistics.',
+    organizer: organizer._id,
+    duration: 45,
+    proctored: false,
+    linkedTo: 'job',
+    questions: [
+      { text: 'Which library is used for data manipulation in Python?', type: 'mcq', options: ['TensorFlow', 'Pandas', 'Flask', 'BeautifulSoup'], correctAnswer: 'Pandas', marks: 5 },
+      { text: 'What is the purpose of cross-validation?', type: 'mcq', options: ['To evaluate model performance', 'To clean data', 'To visualize data', 'To deploy model'], correctAnswer: 'To evaluate model performance', marks: 5 },
+      { text: 'In supervised learning, what do we predict?', type: 'mcq', options: ['Features', 'Labels', 'Models', 'Hyperparameters'], correctAnswer: 'Labels', marks: 5 }
+    ]
+  });
+  console.log('✅ 2 Assessments seeded');
+
+  // ─── Seed Jobs ───
+  const jobs = await Job.create([
+    {
+      title: 'Frontend Developer (React)',
+      company: 'TechSolutions Inc',
+      description: 'We are looking for a passionate Frontend Developer with strong React skills. You will be building scalable user interfaces for our flagship SaaS product.',
+      location: 'Bangalore, India (Hybrid)',
+      type: 'full-time',
+      salary: '₹12,00,000 - ₹18,00,000',
+      skills: ['React', 'JavaScript', 'TailwindCSS', 'Redux'],
+      eligibility: 'B.Tech/B.E in Computer Science or related field with 2+ years of experience.',
+      applyDeadline: d(30),
+      organizer: organizer._id,
+      status: 'active'
+    },
+    {
+      title: 'Software Development Engineer I',
+      company: 'InnovateX',
+      description: 'Join our core engineering team to build high-performance backend systems using Node.js and Microservices architecture. Must pass our technical assessment to proceed.',
+      location: 'Remote',
+      type: 'full-time',
+      salary: '₹15,00,000 - ₹22,00,000',
+      skills: ['Node.js', 'Express', 'MongoDB', 'System Design'],
+      eligibility: 'Freshers (2025/2026 Batch) with excellent problem-solving skills.',
+      applyDeadline: d(15),
+      organizer: organizer._id,
+      assessmentId: sdeAssessment._id,
+      status: 'active'
+    },
+    {
+      title: 'Data Science Intern',
+      company: 'AI Forefront',
+      description: 'An exciting 6-month internship focused on building predictive models and analyzing large datasets. Pre-placement offer (PPO) available for top performers.',
+      location: 'Hyderabad, India',
+      type: 'internship',
+      salary: '₹40,000 / month',
+      skills: ['Python', 'Machine Learning', 'SQL', 'Pandas'],
+      eligibility: 'Pre-final or final year students pursuing degree in Data Science/CS.',
+      applyDeadline: d(10),
+      organizer: organizer._id,
+      assessmentId: dataAssessment._id,
+      status: 'active'
+    },
+    {
+      title: 'Product Designer (UI/UX)',
+      company: 'Creative Labs',
+      description: 'Seeking a creative Product Designer who can turn complex problems into simple, beautiful, and intuitive user experiences.',
+      location: 'Pune, India',
+      type: 'full-time',
+      salary: '₹10,00,000 - ₹15,00,000',
+      skills: ['Figma', 'Prototyping', 'User Research', 'Wireframing'],
+      eligibility: 'Design portfolio demonstrating clear process and high-quality UI design.',
+      applyDeadline: d(20),
+      organizer: organizer._id,
+      status: 'active'
+    }
+  ]);
+  
+  // Link assessments to jobs
+  sdeAssessment.linkedId = jobs[1]._id;
+  await sdeAssessment.save();
+  
+  dataAssessment.linkedId = jobs[2]._id;
+  await dataAssessment.save();
+
+  console.log('✅ 4 Jobs seeded');
 
   console.log('\n🎉 All data seeded successfully!');
   console.log('   Organizer login → organizer@hackhub.dev / Admin@123');

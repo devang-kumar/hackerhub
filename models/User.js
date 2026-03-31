@@ -5,12 +5,16 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  avatar: { type: String, default: '' },
   bio: { type: String, default: '' },
   skills: [String],
   college: { type: String, default: '' },
   resume: { type: String, default: '' },
   role: { type: String, enum: ['user', 'organizer', 'admin'], default: 'user' },
+  // Organizer-specific
+  organization: { type: String, default: '' },
+  orgWebsite: { type: String, default: '' },
+  orgDescription: { type: String, default: '' },
+  // Auth
   isVerified: { type: Boolean, default: false },
   verifyToken: String,
   resetToken: String,
