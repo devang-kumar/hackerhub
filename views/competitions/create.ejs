@@ -1,51 +1,50 @@
-<%- include('../partials/header', { title: 'Create Competition', error: messages.error }) %>
+<%- include('../partials/header', { title: competition ? 'Edit Competition' : 'Create Competition', error: messages.error }) %>
 
 <div class="page-container">
   <div class="form-page">
-    <h1>Post a Competition</h1>
-    <form action="/competitions/create" method="POST" enctype="multipart/form-data" class="form" id="compForm">
+    <h1><%= competition ? 'Edit Competition' : 'Post a Competition' %></h1>
+    <form action="<%= competition ? '/competitions/' + competition._id + '/edit' : '/competitions/create' %>" method="POST" enctype="multipart/form-data" class="form">
 
       <div class="form-section">
         <h3>Basic Info</h3>
         <div class="form-group">
           <label>Competition Title *</label>
-          <input type="text" name="title" placeholder="e.g. National Hackathon 2026" required/>
+          <input type="text" name="title" value="<%= competition ? competition.title : '' %>" placeholder="e.g. National Hackathon 2026" required/>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Type *</label>
             <select name="type">
-              <option value="hackathon">Hackathon</option>
-              <option value="quiz">Quiz</option>
-              <option value="coding">Coding Challenge</option>
-              <option value="case-study">Case Study</option>
-              <option value="other">Other</option>
+              <% ['hackathon','quiz','coding','case-study','other'].forEach(t => { %>
+              <option value="<%= t %>" <%= competition && competition.type === t ? 'selected' : '' %>><%= t %></option>
+              <% }) %>
             </select>
           </div>
           <div class="form-group">
             <label>Mode *</label>
             <select name="mode">
-              <option value="online">Online</option>
-              <option value="offline">Offline</option>
-              <option value="hybrid">Hybrid</option>
+              <% ['online','offline','hybrid'].forEach(m => { %>
+              <option value="<%= m %>" <%= competition && competition.mode === m ? 'selected' : '' %>><%= m %></option>
+              <% }) %>
             </select>
           </div>
         </div>
         <div class="form-group">
           <label>Description *</label>
-          <textarea name="description" rows="5" placeholder="Describe your competition..." required></textarea>
+          <textarea name="description" rows="5" required><%= competition ? competition.description : '' %></textarea>
         </div>
         <div class="form-group">
           <label>Eligibility</label>
-          <input type="text" name="eligibility" placeholder="e.g. Open for all college students"/>
+          <input type="text" name="eligibility" value="<%= competition ? competition.eligibility : '' %>" placeholder="e.g. Open for all college students"/>
         </div>
         <div class="form-group">
           <label>Tags (comma separated)</label>
-          <input type="text" name="tags" placeholder="AI, ML, Web Dev, Finance..."/>
+          <input type="text" name="tags" value="<%= competition ? competition.tags.join(', ') : '' %>" placeholder="AI, ML, Web Dev..."/>
         </div>
         <div class="form-group">
           <label>Banner Image</label>
           <input type="file" name="banner" accept="image/*"/>
+          <% if (competition && competition.banner) { %><small>Current: <a href="<%= competition.banner %>" target="_blank">View</a></small><% } %>
         </div>
       </div>
 
@@ -54,25 +53,25 @@
         <div class="form-row">
           <div class="form-group">
             <label>Min Team Size</label>
-            <input type="number" name="teamMin" value="1" min="1"/>
+            <input type="number" name="teamMin" value="<%= competition ? competition.teamSize.min : 1 %>" min="1"/>
           </div>
           <div class="form-group">
             <label>Max Team Size</label>
-            <input type="number" name="teamMax" value="4" min="1"/>
+            <input type="number" name="teamMax" value="<%= competition ? competition.teamSize.max : 4 %>" min="1"/>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Registration Deadline</label>
-            <input type="date" name="registrationDeadline"/>
+            <input type="date" name="registrationDeadline" value="<%= competition && competition.registrationDeadline ? competition.registrationDeadline.toISOString().split('T')[0] : '' %>"/>
           </div>
           <div class="form-group">
             <label>Start Date</label>
-            <input type="date" name="startDate"/>
+            <input type="date" name="startDate" value="<%= competition && competition.startDate ? competition.startDate.toISOString().split('T')[0] : '' %>"/>
           </div>
           <div class="form-group">
             <label>End Date</label>
-            <input type="date" name="endDate"/>
+            <input type="date" name="endDate" value="<%= competition && competition.endDate ? competition.endDate.toISOString().split('T')[0] : '' %>"/>
           </div>
         </div>
       </div>
@@ -80,18 +79,42 @@
       <div class="form-section">
         <h3>Prizes <button type="button" class="btn btn-outline btn-sm" onclick="addPrize()">+ Add Prize</button></h3>
         <div id="prizes-container">
+          <% if (competition && competition.prizes.length) { %>
+            <% competition.prizes.forEach(p => { %>
+            <div class="prize-row">
+              <input type="text" name="prize_position" value="<%= p.position %>" placeholder="1st Place"/>
+              <input type="text" name="prize_amount" value="<%= p.amount %>" placeholder="₹50,000"/>
+              <input type="text" name="prize_desc" value="<%= p.description %>" placeholder="Description"/>
+              <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            </div>
+            <% }) %>
+          <% } else { %>
           <div class="prize-row">
             <input type="text" name="prize_position" placeholder="1st Place"/>
             <input type="text" name="prize_amount" placeholder="₹50,000"/>
             <input type="text" name="prize_desc" placeholder="Description"/>
             <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
           </div>
+          <% } %>
         </div>
       </div>
 
       <div class="form-section">
         <h3>Stages <button type="button" class="btn btn-outline btn-sm" onclick="addStage()">+ Add Stage</button></h3>
         <div id="stages-container">
+          <% if (competition && competition.stages.length) { %>
+            <% competition.stages.forEach(s => { %>
+            <div class="stage-row">
+              <input type="text" name="stage_title" value="<%= s.title %>" placeholder="Stage Title"/>
+              <textarea name="stage_desc" rows="2"><%= s.description %></textarea>
+              <div class="stage-dates-row">
+                <input type="date" name="stage_start" value="<%= s.startDate ? s.startDate.toISOString().split('T')[0] : '' %>"/>
+                <input type="date" name="stage_end" value="<%= s.endDate ? s.endDate.toISOString().split('T')[0] : '' %>"/>
+              </div>
+              <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            </div>
+            <% }) %>
+          <% } else { %>
           <div class="stage-row">
             <input type="text" name="stage_title" placeholder="Stage Title (e.g. Round 1)"/>
             <textarea name="stage_desc" placeholder="Stage description" rows="2"></textarea>
@@ -101,10 +124,11 @@
             </div>
             <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
           </div>
+          <% } %>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-lg">Publish Competition</button>
+      <button type="submit" class="btn btn-primary btn-lg"><%= competition ? 'Update Competition' : 'Publish Competition' %></button>
     </form>
   </div>
 </div>

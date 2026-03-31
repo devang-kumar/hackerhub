@@ -12,15 +12,22 @@
     <% assessments.forEach(a => { %>
     <div class="job-card-full">
       <div class="job-left">
-        <div class="company-logo"><i class="fas fa-clipboard-check"></i></div>
+        <div class="company-logo" style="font-size:1.2rem"><i class="fas fa-clipboard-check"></i></div>
         <div class="job-details">
           <h3><a href="/assessments/<%= a._id %>"><%= a.title %></a></h3>
           <p><%= a.questions.length %> questions &bull; <%= a.duration %> minutes &bull; Proctored</p>
-          <span class="badge"><%= a.linkedTo %></span>
+          <div class="job-tags">
+            <span class="badge"><%= a.linkedTo %></span>
+            <% if (a.linkedId) { %><span class="badge" style="font-size:0.7rem">ID: <%= a.linkedId %></span><% } %>
+          </div>
         </div>
       </div>
-      <div class="job-right">
+      <div class="job-right" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
         <a href="/assessments/<%= a._id %>" class="btn btn-outline btn-sm">View</a>
+        <a href="/assessments/<%= a._id %>/edit" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>
+        <form action="/assessments/<%= a._id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this assessment?')">
+          <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border-color:#fecaca"><i class="fas fa-trash"></i></button>
+        </form>
       </div>
     </div>
     <% }) %>

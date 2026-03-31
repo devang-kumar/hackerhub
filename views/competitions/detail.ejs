@@ -12,6 +12,14 @@
         </div>
         <h1><%= competition.title %></h1>
         <p class="organizer-info">By <strong><%= competition.organizer.name %></strong></p>
+        <% if (session && session.userId && competition.organizer._id && competition.organizer._id.toString() === session.userId) { %>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <a href="/competitions/<%= competition._id %>/edit" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>
+          <form action="/competitions/<%= competition._id %>/delete" method="POST" onsubmit="return confirm('Delete this competition?')">
+            <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border-color:#fecaca"><i class="fas fa-trash"></i> Delete</button>
+          </form>
+        </div>
+        <% } %>
       </div>
 
       <div class="tabs">

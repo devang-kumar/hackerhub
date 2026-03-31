@@ -12,27 +12,33 @@
   <div class="nav-container">
     <a href="/" class="nav-logo"><i class="fas fa-bolt"></i> HackHub</a>
     <div class="nav-links">
-      <a href="/courses">Learn</a>
-      <a href="/practice">Practice</a>
-      <a href="/mentors">Mentorship</a>
-      <a href="/competitions">Compete</a>
-      <a href="/jobs">Jobs</a>
+      <a href="/competitions">Competitions</a>
+      <a href="/jobs">Jobs & Internships</a>
       <% if (session && session.userId) { %>
+        <% if (session.role === 'organizer' || session.role === 'admin') { %>
           <div class="dropdown">
             <a href="#" class="dropdown-toggle">Post <i class="fas fa-chevron-down"></i></a>
             <div class="dropdown-menu">
-              <a href="/competitions/create">Competition</a>
-              <a href="/jobs/create">Job / Internship</a>
-              <a href="/assessments/create">Assessment</a>
+              <a href="/competitions/create"><i class="fas fa-trophy"></i> Competition</a>
+              <a href="/jobs/create"><i class="fas fa-briefcase"></i> Job / Internship</a>
+              <a href="/assessments/create"><i class="fas fa-clipboard-check"></i> Assessment</a>
             </div>
           </div>
+          <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Manage <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-menu">
+              <a href="/competitions/my"><i class="fas fa-trophy"></i> My Competitions</a>
+              <a href="/jobs/my-jobs"><i class="fas fa-briefcase"></i> My Jobs</a>
+              <a href="/assessments/my"><i class="fas fa-clipboard"></i> My Assessments</a>
+            </div>
+          </div>
+        <% } %>
         <div class="dropdown">
           <a href="#" class="dropdown-toggle"><i class="fas fa-user-circle"></i> <%= session.userName %> <i class="fas fa-chevron-down"></i></a>
           <div class="dropdown-menu">
-            <a href="/auth/profile">My Profile</a>
-            <a href="/jobs/my-applications">My Applications</a>
-              <a href="/assessments/my">My Assessments</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/auth/profile"><i class="fas fa-user"></i> My Profile</a>
+            <a href="/jobs/my-applications"><i class="fas fa-file-alt"></i> My Applications</a>
+            <a href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
         </div>
       <% } else { %>
@@ -46,8 +52,8 @@
   </div>
 </nav>
 <% if (typeof error !== 'undefined' && error && error.length) { %>
-  <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+  <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= Array.isArray(error) ? error[0] : error %></div>
 <% } %>
 <% if (typeof success !== 'undefined' && success && success.length) { %>
-  <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+  <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= Array.isArray(success) ? success[0] : success %></div>
 <% } %>

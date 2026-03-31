@@ -1,0 +1,38 @@
+<%- include('../partials/header', { title: 'My Competitions', error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+    <h1>My Competitions</h1>
+    <a href="/competitions/create" class="btn btn-primary"><i class="fas fa-plus"></i> Create Competition</a>
+  </div>
+
+  <% if (competitions.length === 0) { %>
+    <div class="empty-state"><i class="fas fa-trophy"></i><p>No competitions created yet</p></div>
+  <% } %>
+
+  <div class="cards-grid">
+    <% competitions.forEach(c => { %>
+    <div class="card">
+      <% if (c.banner) { %><img src="<%= c.banner %>" class="card-banner" alt="banner">
+      <% } else { %><div class="card-banner-placeholder"><i class="fas fa-code"></i></div><% } %>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="badge badge-<%= c.type %>"><%= c.type %></span>
+          <span class="badge badge-<%= c.status %>"><%= c.status %></span>
+        </div>
+        <h3 class="card-title"><%= c.title %></h3>
+        <p class="card-desc"><i class="fas fa-users"></i> <%= c.registrations.length %> teams registered</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <a href="/competitions/<%= c._id %>" class="btn btn-outline btn-sm">View</a>
+          <a href="/competitions/<%= c._id %>/edit" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>
+          <form action="/competitions/<%= c._id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this competition?')">
+            <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border-color:#fecaca"><i class="fas fa-trash"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

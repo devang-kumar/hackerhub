@@ -1,62 +1,62 @@
-<%- include('../partials/header', { title: 'Post a Job', error: messages.error }) %>
+<%- include('../partials/header', { title: job ? 'Edit Job' : 'Post a Job', error: messages.error }) %>
 
 <div class="page-container">
   <div class="form-page">
-    <h1>Post a Job / Internship</h1>
-    <form action="/jobs/create" method="POST" enctype="multipart/form-data" class="form">
+    <h1><%= job ? 'Edit Job' : 'Post a Job / Internship' %></h1>
+    <form action="<%= job ? '/jobs/' + job._id + '/edit' : '/jobs/create' %>" method="POST" enctype="multipart/form-data" class="form">
       <div class="form-section">
         <h3>Job Details</h3>
         <div class="form-row">
           <div class="form-group">
             <label>Job Title *</label>
-            <input type="text" name="title" placeholder="e.g. Frontend Developer" required/>
+            <input type="text" name="title" value="<%= job ? job.title : '' %>" placeholder="e.g. Frontend Developer" required/>
           </div>
           <div class="form-group">
             <label>Company Name *</label>
-            <input type="text" name="company" placeholder="e.g. TechCorp" required/>
+            <input type="text" name="company" value="<%= job ? job.company : '' %>" placeholder="e.g. TechCorp" required/>
           </div>
         </div>
         <div class="form-group">
           <label>Job Description *</label>
-          <textarea name="description" rows="6" placeholder="Describe the role, responsibilities..." required></textarea>
+          <textarea name="description" rows="6" required><%= job ? job.description : '' %></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Type *</label>
             <select name="type">
-              <option value="full-time">Full Time</option>
-              <option value="part-time">Part Time</option>
-              <option value="internship">Internship</option>
-              <option value="contract">Contract</option>
+              <% ['full-time','part-time','internship','contract'].forEach(t => { %>
+              <option value="<%= t %>" <%= job && job.type === t ? 'selected' : '' %>><%= t %></option>
+              <% }) %>
             </select>
           </div>
           <div class="form-group">
             <label>Location</label>
-            <input type="text" name="location" placeholder="Remote / City"/>
+            <input type="text" name="location" value="<%= job ? job.location : '' %>" placeholder="Remote / City"/>
           </div>
           <div class="form-group">
             <label>Salary / Stipend</label>
-            <input type="text" name="salary" placeholder="e.g. ₹30,000/month"/>
+            <input type="text" name="salary" value="<%= job ? job.salary : '' %>" placeholder="e.g. ₹30,000/month"/>
           </div>
         </div>
         <div class="form-group">
           <label>Required Skills (comma separated)</label>
-          <input type="text" name="skills" placeholder="React, Node.js, Python..."/>
+          <input type="text" name="skills" value="<%= job ? job.skills.join(', ') : '' %>" placeholder="React, Node.js, Python..."/>
         </div>
         <div class="form-group">
           <label>Eligibility</label>
-          <input type="text" name="eligibility" placeholder="e.g. B.Tech CS students"/>
+          <input type="text" name="eligibility" value="<%= job ? job.eligibility : '' %>" placeholder="e.g. B.Tech CS students"/>
         </div>
         <div class="form-group">
           <label>Application Deadline</label>
-          <input type="date" name="applyDeadline"/>
+          <input type="date" name="applyDeadline" value="<%= job && job.applyDeadline ? job.applyDeadline.toISOString().split('T')[0] : '' %>"/>
         </div>
         <div class="form-group">
           <label>Banner Image</label>
           <input type="file" name="banner" accept="image/*"/>
+          <% if (job && job.banner) { %><small>Current: <a href="<%= job.banner %>" target="_blank">View</a></small><% } %>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">Post Job</button>
+      <button type="submit" class="btn btn-primary btn-lg"><%= job ? 'Update Job' : 'Post Job' %></button>
     </form>
   </div>
 </div>

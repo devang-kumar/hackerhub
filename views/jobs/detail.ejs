@@ -81,10 +81,17 @@
         <% } %>
         <div class="info-row"><i class="fas fa-users"></i><span>Applications</span><strong><%= job.applications.length %></strong></div>
       </div>
-      <% if (session && session.userId && job.organizer._id.toString() === session.userId.toString()) { %>
+      <% if (session && session.userId && job.organizer._id && job.organizer._id.toString() === session.userId) { %>
       <div class="info-card">
         <h4>Organizer Actions</h4>
-        <a href="/jobs/<%= job._id %>/manage" class="btn btn-primary btn-full">Manage Applications</a>
+        <a href="/jobs/<%= job._id %>/manage" class="btn btn-primary btn-full" style="margin-bottom:8px">Manage Applications</a>
+        <a href="/jobs/<%= job._id %>/edit" class="btn btn-outline btn-full" style="margin-bottom:8px"><i class="fas fa-edit"></i> Edit Job</a>
+        <form action="/jobs/<%= job._id %>/toggle-status" method="POST" style="margin-bottom:8px">
+          <button type="submit" class="btn btn-outline btn-full"><%= job.status === 'active' ? 'Close Job' : 'Reopen Job' %></button>
+        </form>
+        <form action="/jobs/<%= job._id %>/delete" method="POST" onsubmit="return confirm('Delete this job?')">
+          <button type="submit" class="btn btn-full" style="background:#fee2e2;color:#dc2626;border-color:#fecaca"><i class="fas fa-trash"></i> Delete Job</button>
+        </form>
       </div>
       <% } %>
     </div>

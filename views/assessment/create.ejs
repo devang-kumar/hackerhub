@@ -1,99 +1,112 @@
-<%- include('../partials/header', { title: 'Create Assessment', error: messages.error }) %>
+<%- include('../partials/header', { title: assessment ? 'Edit Assessment' : 'Create Assessment', error: messages.error }) %>
 
 <div class="page-container">
   <div class="form-page">
-    <h1>Create Assessment / Exam</h1>
-    <form action="/assessments/create" method="POST" class="form" id="assessForm">
+    <h1><%= assessment ? 'Edit Assessment' : 'Create Assessment / Exam' %></h1>
+    <form action="<%= assessment ? '/assessments/' + assessment._id + '/edit' : '/assessments/create' %>" method="POST" class="form" id="assessForm">
+
       <div class="form-section">
         <h3>Assessment Info</h3>
         <div class="form-row">
           <div class="form-group">
             <label>Title *</label>
-            <input type="text" name="title" placeholder="e.g. Technical Round 1" required/>
+            <input type="text" name="title" value="<%= assessment ? assessment.title : '' %>" placeholder="e.g. Technical Round 1" required/>
           </div>
           <div class="form-group">
             <label>Duration (minutes)</label>
-            <input type="number" name="duration" value="60" min="5"/>
+            <input type="number" name="duration" value="<%= assessment ? assessment.duration : 60 %>" min="5"/>
           </div>
         </div>
         <div class="form-group">
-          <label>Description</label>
-          <textarea name="description" rows="3" placeholder="Instructions for candidates..."></textarea>
+          <label>Instructions for candidates</label>
+          <textarea name="description" rows="3"><%= assessment ? assessment.description : '' %></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Linked To</label>
             <select name="linkedTo">
-              <option value="job">Job</option>
-              <option value="competition">Competition</option>
+              <option value="job" <%= assessment && assessment.linkedTo === 'job' ? 'selected' : '' %>>Job</option>
+              <option value="competition" <%= assessment && assessment.linkedTo === 'competition' ? 'selected' : '' %>>Competition</option>
             </select>
           </div>
           <div class="form-group">
             <label>Linked ID (Job/Competition ID)</label>
-            <input type="text" name="linkedId" placeholder="Paste the ID here"/>
+            <input type="text" name="linkedId" value="<%= assessment && assessment.linkedId ? assessment.linkedId : '' %>" placeholder="Paste the ID here"/>
           </div>
         </div>
       </div>
 
       <div class="form-section">
         <h3>Questions <button type="button" class="btn btn-outline btn-sm" onclick="addQuestion()">+ Add Question</button></h3>
-        <div id="questions-container">
-          <!-- Questions added dynamically -->
-        </div>
+        <div id="questions-container"></div>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-lg">Create Assessment</button>
+      <button type="submit" class="btn btn-primary btn-lg"><%= assessment ? 'Update Assessment' : 'Create Assessment' %></button>
     </form>
   </div>
 </div>
 
 <script>
 let qCount = 0;
-function addQuestion() {
+
+// Pre-fill existing questions on edit
+const existing = <%- assessment ? JSON.stringify(assessment.questions) : '[]' %>;
+
+function addQuestion(data) {
   const i = qCount++;
   const div = document.createElement('div');
   div.className = 'question-block';
+  const isMcq = !data || data.type === 'mcq';
   div.innerHTML = `
     <div class="q-header">
-      <span>Question ${i+1}</span>
-      <button type="button" class="btn-remove" onclick="this.closest('.question-block').remove()"><i class="fas fa-times"></i></button>
+      <span>Question ${i + 1}</span>
+      <button type="button" class="btn-remove" onclick="this.closest('.question-block').remove(); renumberQuestions()"><i class="fas fa-times"></i></button>
     </div>
     <div class="form-group">
       <label>Question Text *</label>
-      <textarea name="q_text" rows="2" placeholder="Enter question..." required></textarea>
+      <textarea name="q_text" rows="2" required>${data ? data.text : ''}</textarea>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label>Type</label>
         <select name="q_type" onchange="toggleOptions(this, ${i})">
-          <option value="mcq">MCQ</option>
-          <option value="text">Text Answer</option>
-          <option value="code">Code</option>
+          <option value="mcq" ${isMcq ? 'selected' : ''}>MCQ</option>
+          <option value="text" ${data && data.type === 'text' ? 'selected' : ''}>Text Answer</option>
+          <option value="code" ${data && data.type === 'code' ? 'selected' : ''}>Code</option>
         </select>
       </div>
       <div class="form-group">
         <label>Marks</label>
-        <input type="number" name="q_marks" value="1" min="1"/>
+        <input type="number" name="q_marks" value="${data ? data.marks : 1}" min="1"/>
       </div>
     </div>
-    <div id="opts_${i}" class="mcq-options">
+    <div id="opts_${i}" class="mcq-options" style="display:${isMcq ? 'block' : 'none'}">
       <label>Options</label>
-      <input type="text" name="q_opt_${i}_0" placeholder="Option A"/>
-      <input type="text" name="q_opt_${i}_1" placeholder="Option B"/>
-      <input type="text" name="q_opt_${i}_2" placeholder="Option C"/>
-      <input type="text" name="q_opt_${i}_3" placeholder="Option D"/>
-      <label>Correct Answer (exact text)</label>
-      <input type="text" name="q_correct" placeholder="Type the correct option text"/>
+      <input type="text" name="q_opt_${i}_0" value="${data && data.options && data.options[0] ? data.options[0] : ''}" placeholder="Option A"/>
+      <input type="text" name="q_opt_${i}_1" value="${data && data.options && data.options[1] ? data.options[1] : ''}" placeholder="Option B"/>
+      <input type="text" name="q_opt_${i}_2" value="${data && data.options && data.options[2] ? data.options[2] : ''}" placeholder="Option C"/>
+      <input type="text" name="q_opt_${i}_3" value="${data && data.options && data.options[3] ? data.options[3] : ''}" placeholder="Option D"/>
+      <label>Correct Answer (exact text of correct option)</label>
+      <input type="text" name="q_correct" value="${data && data.correctAnswer ? data.correctAnswer : ''}" placeholder="Type the correct option text"/>
     </div>
   `;
   document.getElementById('questions-container').appendChild(div);
 }
+
 function toggleOptions(sel, i) {
-  const opts = document.getElementById('opts_' + i);
-  opts.style.display = sel.value === 'mcq' ? 'block' : 'none';
+  document.getElementById('opts_' + i).style.display = sel.value === 'mcq' ? 'block' : 'none';
 }
-// Add first question by default
-addQuestion();
+
+function renumberQuestions() {
+  document.querySelectorAll('.question-block .q-header span').forEach((el, i) => el.textContent = 'Question ' + (i + 1));
+}
+
+// Load existing questions or add default
+if (existing.length > 0) {
+  existing.forEach(q => addQuestion(q));
+} else {
+  addQuestion();
+}
 </script>
 
 <%- include('../partials/footer') %>
