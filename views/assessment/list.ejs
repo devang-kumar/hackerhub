@@ -1,0 +1,30 @@
+<%- include('../partials/header', { title: 'My Assessments' }) %>
+
+<div class="page-container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+    <h1>My Assessments</h1>
+    <a href="/assessments/create" class="btn btn-primary"><i class="fas fa-plus"></i> Create Assessment</a>
+  </div>
+  <% if (assessments.length === 0) { %>
+    <div class="empty-state"><i class="fas fa-clipboard"></i><p>No assessments yet</p></div>
+  <% } %>
+  <div class="jobs-full-list">
+    <% assessments.forEach(a => { %>
+    <div class="job-card-full">
+      <div class="job-left">
+        <div class="company-logo"><i class="fas fa-clipboard-check"></i></div>
+        <div class="job-details">
+          <h3><a href="/assessments/<%= a._id %>"><%= a.title %></a></h3>
+          <p><%= a.questions.length %> questions &bull; <%= a.duration %> minutes &bull; Proctored</p>
+          <span class="badge"><%= a.linkedTo %></span>
+        </div>
+      </div>
+      <div class="job-right">
+        <a href="/assessments/<%= a._id %>" class="btn btn-outline btn-sm">View</a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

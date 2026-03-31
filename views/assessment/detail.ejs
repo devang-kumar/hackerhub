@@ -1,0 +1,26 @@
+<%- include('../partials/header', { title: assessment.title }) %>
+
+<div class="page-container">
+  <div class="detail-layout">
+    <div class="detail-main">
+      <h1><%= assessment.title %></h1>
+      <p><%= assessment.description %></p>
+      <div class="info-row"><i class="fas fa-clock"></i><span>Duration:</span><strong><%= assessment.duration %> minutes</strong></div>
+      <div class="info-row"><i class="fas fa-question-circle"></i><span>Questions:</span><strong><%= assessment.questions.length %></strong></div>
+      <div class="info-row"><i class="fas fa-video"></i><span>Proctored:</span><strong>Yes (Camera + Mic + Tab monitoring)</strong></div>
+      <div class="assessment-rules">
+        <h3>Rules & Instructions</h3>
+        <ul>
+          <li>Camera and microphone access is required throughout the exam.</li>
+          <li>Do not switch tabs or minimize the window — it will be flagged.</li>
+          <li>Ensure good lighting and a quiet environment.</li>
+          <li>You cannot pause the exam once started.</li>
+          <li>The exam will auto-submit when time runs out.</li>
+        </ul>
+      </div>
+      <a href="/assessments/<%= assessment._id %>/take" class="btn btn-primary btn-lg">Start Exam</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

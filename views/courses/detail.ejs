@@ -1,0 +1,93 @@
+<%- include('../partials/header') %>
+
+<div class="page-container">
+  <div class="detail-layout">
+    <div class="detail-main">
+      <div class="detail-banner" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(30, 41, 59, 0.5)); display:flex; align-items:center; justify-content:center;">
+        <i class="fas fa-play-circle" style="font-size: 5rem; color: rgba(255,255,255,0.5);"></i>
+      </div>
+      
+      <div class="detail-header">
+        <div class="detail-badges">
+          <span class="badge badge-coding"><%= course.level %></span>
+        </div>
+        <h1><%= course.title %></h1>
+        <p class="organizer-info"><i class="fas fa-chalkboard-teacher"></i> Instructor: <%= course.instructor ? course.instructor.name : 'Unstop Expert' %></p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('about')">About Course</button>
+        <button class="tab-btn" onclick="switchTab('modules')">Curriculum</button>
+      </div>
+
+      <div id="tab-about" class="tab-content active content-section">
+        <h3><i class="fas fa-info-circle"></i> Description</h3>
+        <p><%= course.description %></p>
+      </div>
+
+      <div id="tab-modules" class="tab-content content-section">
+        <h3><i class="fas fa-list"></i> Curriculum</h3>
+        <div class="stages-timeline">
+          <% if (course.modules && course.modules.length > 0) { %>
+            <% course.modules.forEach((mod, idx) => { %>
+              <div class="stage-item">
+                <div class="stage-num"><%= idx + 1 %></div>
+                <div class="stage-info">
+                  <h4><%= mod.title %></h4>
+                  <p><%= mod.content %></p>
+                  <% if (isEnrolled && mod.videoUrl) { %>
+                    <a href="<%= mod.videoUrl %>" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-play"></i> Watch Video</a>
+                  <% } else if (mod.videoUrl) { %>
+                    <span class="stage-dates"><i class="fas fa-lock"></i> Enroll to watch</span>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p>No modules available yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="info-card">
+        <h4>Course Details</h4>
+        <div class="info-row"><i class="fas fa-clock"></i> <span>Duration</span> <strong><%= course.duration || 'Flexible' %></strong></div>
+        <div class="info-row"><i class="fas fa-signal"></i> <span>Level</span> <strong><%= course.level %></strong></div>
+        <div class="info-row"><i class="fas fa-users"></i> <span>Enrolled</span> <strong><%= course.enrolledUsers.length %></strong></div>
+        <div class="info-row"><i class="fas fa-rupee-sign"></i> <span>Price</span> <strong><%= course.price > 0 ? course.price : 'Free' %></strong></div>
+        
+        <div style="margin-top: 20px;">
+          <% if (isEnrolled) { %>
+            <div class="already-registered" style="padding: 15px;">
+              <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
+              <h3 style="font-size: 1.1rem;">You are Enrolled</h3>
+              <p style="font-size: 0.9rem; margin-top: 5px;">Go to Curriculum to start learning.</p>
+            </div>
+          <% } else if (session.userId) { %>
+            <form action="/courses/<%= course._id %>/enroll" method="POST">
+              <button type="submit" class="btn btn-primary btn-full btn-lg">Enroll Now</button>
+            </form>
+          <% } else { %>
+            <div class="login-prompt" style="padding: 15px;">
+              <p style="margin-bottom: 15px;">Please login to enroll in this course.</p>
+              <a href="/auth/login" class="btn btn-outline btn-full">Login to Enroll</a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+</script>
+
+<%- include('../partials/footer') %>

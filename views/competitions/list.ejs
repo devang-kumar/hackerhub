@@ -1,0 +1,70 @@
+<%- include('../partials/header', { title: 'Competitions', error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <div class="page-hero">
+    <h1>Competitions & Hackathons</h1>
+    <p>Find and participate in competitions that match your skills</p>
+  </div>
+
+  <div class="filter-bar">
+    <form action="/competitions" method="GET" class="filter-form">
+      <input type="text" name="search" placeholder="Search competitions..." value="<%= query.search || '' %>"/>
+      <select name="type">
+        <option value="">All Types</option>
+        <option value="hackathon" <%= query.type === 'hackathon' ? 'selected' : '' %>>Hackathon</option>
+        <option value="quiz" <%= query.type === 'quiz' ? 'selected' : '' %>>Quiz</option>
+        <option value="coding" <%= query.type === 'coding' ? 'selected' : '' %>>Coding</option>
+        <option value="case-study" <%= query.type === 'case-study' ? 'selected' : '' %>>Case Study</option>
+        <option value="other" <%= query.type === 'other' ? 'selected' : '' %>>Other</option>
+      </select>
+      <select name="mode">
+        <option value="">All Modes</option>
+        <option value="online" <%= query.mode === 'online' ? 'selected' : '' %>>Online</option>
+        <option value="offline" <%= query.mode === 'offline' ? 'selected' : '' %>>Offline</option>
+        <option value="hybrid" <%= query.mode === 'hybrid' ? 'selected' : '' %>>Hybrid</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/competitions" class="btn btn-outline">Clear</a>
+    </form>
+    <% if (session && session.userId) { %>
+      <a href="/competitions/create" class="btn btn-primary"><i class="fas fa-plus"></i> Post Competition</a>
+    <% } %>
+  </div>
+
+  <div class="cards-grid">
+    <% if (competitions.length === 0) { %>
+      <div class="empty-state"><i class="fas fa-search"></i><p>No competitions found</p></div>
+    <% } %>
+    <% competitions.forEach(c => { %>
+    <div class="card">
+      <% if (c.banner) { %><img src="<%= c.banner %>" class="card-banner" alt="banner">
+      <% } else { %><div class="card-banner-placeholder"><i class="fas fa-code"></i></div><% } %>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="badge badge-<%= c.type %>"><%= c.type %></span>
+          <span class="badge badge-mode"><%= c.mode %></span>
+        </div>
+        <h3 class="card-title"><%= c.title %></h3>
+        <p class="card-desc"><%= c.description.substring(0, 120) %>...</p>
+        <div class="card-meta">
+          <span><i class="fas fa-users"></i> <%= c.teamSize.min %>-<%= c.teamSize.max %> members</span>
+          <span><i class="fas fa-calendar-alt"></i> Deadline: <%= c.registrationDeadline ? new Date(c.registrationDeadline).toLocaleDateString() : 'Open' %></span>
+        </div>
+        <% if (c.prizes && c.prizes.length) { %>
+        <div class="prizes-row">
+          <% c.prizes.slice(0,2).forEach(p => { %>
+            <span class="prize-chip"><i class="fas fa-trophy"></i> <%= p.position %>: <%= p.amount %></span>
+          <% }) %>
+        </div>
+        <% } %>
+        <div class="card-footer">
+          <span class="registrations-count"><i class="fas fa-user-check"></i> <%= c.registrations.length %> registered</span>
+          <a href="/competitions/<%= c._id %>" class="btn btn-primary btn-sm">View & Register</a>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

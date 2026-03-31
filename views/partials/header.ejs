@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= typeof title !== 'undefined' ? title + ' | HackHub' : 'HackHub - Compete. Grow. Succeed.' %></title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-logo"><i class="fas fa-bolt"></i> HackHub</a>
+    <div class="nav-links">
+      <a href="/courses">Learn</a>
+      <a href="/practice">Practice</a>
+      <a href="/mentors">Mentorship</a>
+      <a href="/competitions">Compete</a>
+      <a href="/jobs">Jobs</a>
+      <% if (session && session.userId) { %>
+          <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Post <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-menu">
+              <a href="/competitions/create">Competition</a>
+              <a href="/jobs/create">Job / Internship</a>
+              <a href="/assessments/create">Assessment</a>
+            </div>
+          </div>
+        <div class="dropdown">
+          <a href="#" class="dropdown-toggle"><i class="fas fa-user-circle"></i> <%= session.userName %> <i class="fas fa-chevron-down"></i></a>
+          <div class="dropdown-menu">
+            <a href="/auth/profile">My Profile</a>
+            <a href="/jobs/my-applications">My Applications</a>
+              <a href="/assessments/my">My Assessments</a>
+            <a href="/auth/logout">Logout</a>
+          </div>
+        </div>
+      <% } else { %>
+        <a href="/auth/login" class="btn btn-outline">Login</a>
+        <a href="/auth/register" class="btn btn-primary">Register</a>
+      <% } %>
+    </div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+</nav>
+<% if (typeof error !== 'undefined' && error && error.length) { %>
+  <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+<% if (typeof success !== 'undefined' && success && success.length) { %>
+  <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+<% } %>

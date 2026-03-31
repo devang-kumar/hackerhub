@@ -1,0 +1,16 @@
+<%- include('../partials/header', { title: 'Team Invitation' }) %>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <i class="fas fa-envelope-open-text" style="font-size:3rem;color:var(--primary)"></i>
+      <h2>Team Invitation</h2>
+      <p>You've been invited to join <strong><%= team.name %></strong> for <strong><%= team.competition.title %></strong></p>
+    </div>
+    <p>Please login or register to accept this invitation.</p>
+    <a href="/auth/login?redirect=/competitions/invite/<%= token %>" class="btn btn-primary btn-full">Login to Accept</a>
+    <a href="/auth/register" class="btn btn-outline btn-full" style="margin-top:10px">Create Account</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

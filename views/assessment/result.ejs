@@ -1,0 +1,24 @@
+<%- include('../partials/header', { title: 'Exam Result' }) %>
+
+<div class="auth-page">
+  <div class="auth-card" style="text-align:center;">
+    <% const pct = Math.round((score/total)*100); %>
+    <div class="result-circle" style="--pct:<%= pct %>">
+      <div class="result-inner">
+        <span class="result-score"><%= score %></span>
+        <span class="result-total">/ <%= total %></span>
+      </div>
+    </div>
+    <h2><%= pct >= 70 ? 'Great Job!' : pct >= 40 ? 'Good Effort!' : 'Keep Practicing!' %></h2>
+    <p>You scored <strong><%= score %> out of <%= total %></strong> (<%= pct %>%)</p>
+    <div class="result-bar">
+      <div class="result-fill" style="width:<%= pct %>%;background:<%= pct>=70?'#22c55e':pct>=40?'#f59e0b':'#ef4444' %>"></div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;">
+      <a href="/" class="btn btn-outline">Go Home</a>
+      <a href="/jobs/my-applications" class="btn btn-primary">My Applications</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

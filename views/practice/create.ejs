@@ -1,0 +1,69 @@
+<%- include('../partials/header') %>
+
+<div class="form-page">
+  <h1>Create Practice Problem</h1>
+  
+  <form action="/practice/create" method="POST" class="form">
+    <div class="form-section">
+      <h3>Basic Information</h3>
+      <div class="form-group">
+        <label>Problem Title</label>
+        <input type="text" name="title" required placeholder="e.g. Two Sum">
+      </div>
+      <div class="form-group">
+        <label>Short Description</label>
+        <textarea name="description" required placeholder="Brief summary of the problem"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select name="difficulty">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Score Values (Points)</label>
+          <input type="number" name="score" value="10">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tags</label>
+        <input type="text" name="tags" placeholder="e.g. Array, Hash Table, Two Pointers (comma separated)">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Problem Details</h3>
+      <div class="form-group">
+        <label>Full Problem Statement</label>
+        <textarea name="problemStatement" required placeholder="Describe the problem in detail." style="min-height: 150px;"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Input Format</label>
+          <textarea name="inputFormat" placeholder="The first line contains an integer T..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Output Format</label>
+          <textarea name="outputFormat" placeholder="Print the max value for each test case..."></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sample Input</label>
+          <textarea name="sampleInput" placeholder="2\n1 2\n3 4" style="font-family: monospace;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Sample Output</label>
+          <textarea name="sampleOutput" placeholder="3\n7" style="font-family: monospace;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">Publish Problem</button>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

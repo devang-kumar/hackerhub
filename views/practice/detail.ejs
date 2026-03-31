@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+
+<div class="page-container">
+  <div class="detail-layout">
+    <div class="detail-main">
+      <div class="detail-header">
+        <div class="detail-badges">
+          <span class="badge <%= problem.difficulty === 'Easy' ? 'badge-online' : problem.difficulty === 'Medium' ? 'badge-pending' : 'badge-closed' %>"><%= problem.difficulty %></span>
+          <span class="badge badge-coding"><%= problem.score %> Points</span>
+        </div>
+        <h1><%= problem.title %></h1>
+        <div class="tags-row" style="margin-top: 10px;">
+          <% problem.tags.forEach(tag => { %>
+            <span class="skill-chip"><%= tag %></span>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3><i class="fas fa-file-alt"></i> Problem Statement</h3>
+        <p><%= problem.problemStatement %></p>
+      </div>
+
+      <div class="content-section" style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <h3><i class="fas fa-sign-in-alt"></i> Input Format</h3>
+          <p><%= problem.inputFormat %></p>
+        </div>
+        <div style="flex: 1;">
+          <h3><i class="fas fa-sign-out-alt"></i> Output Format</h3>
+          <p><%= problem.outputFormat %></p>
+        </div>
+      </div>
+
+      <div class="content-section" style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,255,255,0.2);">
+        <div style="display: flex; gap: 20px;">
+          <div style="flex: 1;">
+            <h4 style="color: #fff; margin-bottom: 10px;">Sample Input</h4>
+            <pre style="background: #000; padding: 15px; border-radius: 8px; color: #a3e635; font-family: monospace; overflow-x: auto;"><%= problem.sampleInput %></pre>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color: #fff; margin-bottom: 10px;">Sample Output</h4>
+            <pre style="background: #000; padding: 15px; border-radius: 8px; color: #a3e635; font-family: monospace; overflow-x: auto;"><%= problem.sampleOutput %></pre>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="info-card" style="position: sticky; top: 100px;">
+        <h4 style="display: flex; justify-content: space-between; align-items: center;">
+          Code Editor 
+          <% if (isSolved) { %>
+            <span style="color: #4ade80; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> Solved</span>
+          <% } %>
+        </h4>
+        
+        <form action="/practice/<%= problem._id %>/submit" method="POST" class="form">
+          <div class="form-group">
+            <label style="display: flex; justify-content: space-between;">
+              <span>Language</span>
+              <span style="color: var(--primary);"><i class="fab fa-js"></i> JavaScript</span>
+            </label>
+            <textarea name="code" required spellcheck="false" style="font-family: monospace; min-height: 250px; background: #000; color: #fff; line-height: 1.5; padding: 15px; border-radius: 10px;" placeholder="// Write your solution here..."></textarea>
+          </div>
+
+          <% if (session.userId) { %>
+            <button type="submit" class="btn btn-primary btn-full btn-lg">Run Code & Submit</button>
+          <% } else { %>
+            <a href="/auth/login" class="btn btn-outline btn-full btn-lg">Login to Submit</a>
+          <% } %>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

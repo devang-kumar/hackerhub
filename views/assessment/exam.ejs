@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= assessment.title %> - Exam</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body { background: #0f172a; color: #e2e8f0; margin: 0; font-family: 'Segoe UI', sans-serif; }
+    .exam-layout { display: grid; grid-template-columns: 1fr 280px; min-height: 100vh; }
+    .exam-main { padding: 20px; overflow-y: auto; }
+    .exam-sidebar { background: #1e293b; padding: 20px; border-left: 1px solid #334155; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .exam-header { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin: -20px -20px 20px; }
+    .timer { font-size: 1.5rem; font-weight: bold; color: #f59e0b; }
+    .timer.danger { color: #ef4444; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .proctor-panel { background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    .proctor-panel h4 { margin: 0 0 10px; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; }
+    #cameraFeed { width: 100%; border-radius: 8px; background: #000; aspect-ratio: 4/3; object-fit: cover; }
+    .proctor-status { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .status-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+    .status-dot.warn { background: #f59e0b; }
+    .status-dot.error { background: #ef4444; }
+    .question-card { background: #1e293b; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 1px solid #334155; }
+    .question-num { color: #64748b; font-size: 0.85rem; margin-bottom: 8px; }
+    .question-text { font-size: 1.1rem; margin-bottom: 20px; line-height: 1.6; }
+    .options-list { display: flex; flex-direction: column; gap: 10px; }
+    .option-label { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; cursor: pointer; transition: all 0.2s; }
+    .option-label:hover { border-color: #6366f1; background: #1a1f35; }
+    .option-label input[type=radio]:checked + span { color: #6366f1; }
+    .option-label:has(input:checked) { border-color: #6366f1; background: #1a1f35; }
+    .text-answer { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; color: #e2e8f0; font-size: 1rem; resize: vertical; }
+    .q-nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px; }
+    .q-nav-btn { padding: 8px; border: 1px solid #334155; border-radius: 6px; background: #0f172a; color: #94a3b8; cursor: pointer; font-size: 0.85rem; text-align: center; }
+    .q-nav-btn.answered { background: #22c55e; color: #fff; border-color: #22c55e; }
+    .q-nav-btn.current { border-color: #6366f1; color: #6366f1; }
+    .submit-btn { width: 100%; padding: 14px; background: #6366f1; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    .submit-btn:hover { background: #4f46e5; }
+    .warning-banner { background: #7c2d12; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 0.9rem; display: none; }
+    .warning-banner.show { display: block; }
+    .system-check { background: #0f172a; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .check-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e293b; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<div id="permissionModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#1e293b;padding:40px;border-radius:16px;max-width:500px;text-align:center;">
+    <i class="fas fa-shield-alt" style="font-size:3rem;color:#6366f1;margin-bottom:20px;display:block;"></i>
+    <h2>Proctored Exam</h2>
+    <p>This exam requires access to your <strong>camera</strong> and <strong>microphone</strong> for proctoring. Tab switching and window minimizing will be flagged.</p>
+    <ul style="text-align:left;margin:20px 0;color:#94a3b8;">
+      <li>Ensure good lighting</li>
+      <li>Stay in frame throughout</li>
+      <li>No switching tabs</li>
+      <li>Exam auto-submits on time out</li>
+    </ul>
+    <button onclick="startProctoring()" style="background:#6366f1;color:#fff;border:none;padding:14px 30px;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;">
+      <i class="fas fa-video"></i> Allow Camera & Start Exam
+    </button>
+  </div>
+</div>
+
+<div class="exam-layout" id="examLayout" style="display:none;">
+  <div class="exam-main">
+    <div class="exam-header">
+      <div>
+        <strong><%= assessment.title %></strong>
+        <span style="color:#64748b;margin-left:15px;"><%= assessment.questions.length %> Questions</span>
+      </div>
+      <div class="timer" id="timer">--:--</div>
+      <div id="warningCount" style="color:#f59e0b;font-size:0.9rem;"></div>
+    </div>
+
+    <div id="warningBanner" class="warning-banner">
+      <i class="fas fa-exclamation-triangle"></i> <span id="warningMsg"></span>
+    </div>
+
+    <form action="/assessments/<%= assessment._id %>/submit" method="POST" id="examForm">
+      <% assessment.questions.forEach((q, i) => { %>
+      <div class="question-card" id="qcard_<%= i %>">
+        <div class="question-num">Question <%= i+1 %> of <%= assessment.questions.length %> &bull; <%= q.marks %> mark(s)</div>
+        <div class="question-text"><%= q.text %></div>
+        <% if (q.type === 'mcq') { %>
+        <div class="options-list">
+          <% q.options.forEach((opt, oi) => { %>
+          <label class="option-label" onclick="markAnswered(<%= i %>)">
+            <input type="radio" name="ans_<%= q._id %>" value="<%= opt %>"/>
+            <span><%= opt %></span>
+          </label>
+          <% }) %>
+        </div>
+        <% } else { %>
+        <textarea class="text-answer" name="ans_<%= q._id %>" rows="5" placeholder="Type your answer here..." oninput="markAnswered(<%= i %>)"></textarea>
+        <% } %>
+      </div>
+      <% }) %>
+      <button type="button" onclick="confirmSubmit()" class="submit-btn">
+        <i class="fas fa-paper-plane"></i> Submit Exam
+      </button>
+    </form>
+  </div>
+
+  <div class="exam-sidebar">
+    <div class="proctor-panel">
+      <h4><i class="fas fa-video"></i> Proctoring Active</h4>
+      <video id="cameraFeed" autoplay muted playsinline></video>
+      <div class="proctor-status">
+        <div class="status-item"><div class="status-dot" id="camDot"></div> Camera</div>
+        <div class="status-item"><div class="status-dot" id="micDot"></div> Microphone</div>
+        <div class="status-item"><div class="status-dot" id="tabDot"></div> Tab Focus</div>
+        <div class="status-item"><div class="status-dot" id="sysDot"></div> System Check</div>
+      </div>
+    </div>
+
+    <div class="system-check">
+      <h4 style="color:#94a3b8;font-size:0.8rem;text-transform:uppercase;margin:0 0 10px;">System Info</h4>
+      <div class="check-item"><span>Browser</span><span id="browserInfo" style="color:#22c55e;">OK</span></div>
+      <div class="check-item"><span>Screen</span><span id="screenInfo" style="color:#22c55e;">OK</span></div>
+      <div class="check-item"><span>Warnings</span><span id="warnCount" style="color:#f59e0b;">0</span></div>
+    </div>
+
+    <h4 style="color:#94a3b8;font-size:0.8rem;text-transform:uppercase;margin:0 0 10px;">Question Navigator</h4>
+    <div class="q-nav" id="qNav">
+      <% assessment.questions.forEach((q, i) => { %>
+      <div class="q-nav-btn" id="qnav_<%= i %>" onclick="scrollToQ(<%= i %>)"><%= i+1 %></div>
+      <% }) %>
+    </div>
+
+    <button onclick="confirmSubmit()" class="submit-btn">Submit Exam</button>
+  </div>
+</div>
+
+<script src="/js/proctor.js"></script>
+<script>
+const DURATION = <%= assessment.duration %> * 60;
+const TOTAL_Q = <%= assessment.questions.length %>;
+let timeLeft = DURATION;
+let warnings = 0;
+let timerInterval;
+let answered = new Array(TOTAL_Q).fill(false);
+
+function startProctoring() {
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(stream => {
+      document.getElementById('cameraFeed').srcObject = stream;
+      document.getElementById('camDot').className = 'status-dot';
+      document.getElementById('micDot').className = 'status-dot';
+      document.getElementById('permissionModal').style.display = 'none';
+      document.getElementById('examLayout').style.display = 'grid';
+      startTimer();
+      setupProctoring();
+      document.getElementById('browserInfo').textContent = navigator.userAgent.includes('Chrome') ? 'Chrome ✓' : 'OK';
+      document.getElementById('screenInfo').textContent = window.screen.width + 'x' + window.screen.height;
+      document.getElementById('sysDot').className = 'status-dot';
+    })
+    .catch(err => {
+      alert('Camera/Microphone access is required to take this exam. Please allow access and try again.');
+    });
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    const el = document.getElementById('timer');
+    el.textContent = m + ':' + s;
+    if (timeLeft <= 300) el.classList.add('danger');
+    if (timeLeft <= 0) { clearInterval(timerInterval); autoSubmit(); }
+  }, 1000);
+}
+
+function setupProctoring() {
+  // Tab visibility detection
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      addWarning('Tab switch detected! This has been recorded.');
+      document.getElementById('tabDot').className = 'status-dot error';
+      setTimeout(() => document.getElementById('tabDot').className = 'status-dot', 3000);
+    }
+  });
+  // Window blur
+  window.addEventListener('blur', () => {
+    addWarning('Window focus lost! Stay on the exam window.');
+  });
+  window.addEventListener('focus', () => {
+    document.getElementById('tabDot').className = 'status-dot';
+  });
+  // Right click disable
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  // Copy paste disable
+  document.addEventListener('copy', e => e.preventDefault());
+  document.addEventListener('paste', e => e.preventDefault());
+  // Keyboard shortcuts disable
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && ['c','v','x','a','p'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) e.preventDefault();
+  });
+}
+
+function addWarning(msg) {
+  warnings++;
+  document.getElementById('warnCount').textContent = warnings;
+  document.getElementById('warningMsg').textContent = msg;
+  document.getElementById('warningBanner').classList.add('show');
+  document.getElementById('warningCount').textContent = warnings + ' warning(s)';
+  setTimeout(() => document.getElementById('warningBanner').classList.remove('show'), 4000);
+}
+
+function markAnswered(i) {
+  answered[i] = true;
+  document.getElementById('qnav_' + i).classList.add('answered');
+}
+
+function scrollToQ(i) {
+  document.getElementById('qcard_' + i).scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.q-nav-btn').forEach(b => b.classList.remove('current'));
+  document.getElementById('qnav_' + i).classList.add('current');
+}
+
+function confirmSubmit() {
+  const unanswered = answered.filter(a => !a).length;
+  const msg = unanswered > 0 ? `You have ${unanswered} unanswered question(s). Submit anyway?` : 'Are you sure you want to submit?';
+  if (confirm(msg)) document.getElementById('examForm').submit();
+}
+
+function autoSubmit() {
+  alert('Time is up! Your exam is being submitted.');
+  document.getElementById('examForm').submit();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Learn. Practice. <span class="highlight">Mentorship.</span> Compete. Jobs.</h1>
+    <p>The ultimate platform for students and professionals to unlock their potential, showcase their skills, and land their dream jobs.</p>
+    <div class="hero-actions">
+      <a href="/courses" class="btn btn-primary btn-lg"><i class="fas fa-book-open"></i> Start Learning</a>
+      <a href="/mentors" class="btn btn-outline btn-lg"><i class="fas fa-user-tie"></i> Find a Mentor</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">500+</span><span>Opportunities</span></div>
+      <div class="stat"><span class="stat-num">10K+</span><span>Learners</span></div>
+      <div class="stat"><span class="stat-num">200+</span><span>Mentors</span></div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <div class="hero-graphic">
+      <i class="fas fa-rocket"></i>
+    </div>
+  </div>
+</section>
+
+<!-- Modules Grid (Unstop-like Hub) -->
+<section class="section" style="padding-top: 0;">
+  <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+    
+    <a href="/courses" class="card" style="text-align: center; padding: 40px 20px; transition: transform 0.3s; text-decoration: none;">
+      <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #8b5cf6; margin-bottom: 20px;"></i>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Learn</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Master new tech skills with expert courses.</p>
+    </a>
+
+    <a href="/practice" class="card" style="text-align: center; padding: 40px 20px; transition: transform 0.3s; text-decoration: none;">
+      <i class="fas fa-laptop-code" style="font-size: 3rem; color: #10b981; margin-bottom: 20px;"></i>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Practice</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Solve coding challenges and boost logic.</p>
+    </a>
+
+    <a href="/mentors" class="card" style="text-align: center; padding: 40px 20px; transition: transform 0.3s; text-decoration: none;">
+      <i class="fas fa-comments" style="font-size: 3rem; color: #f59e0b; margin-bottom: 20px;"></i>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Mentorship</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">1-on-1 guidance from industry pros.</p>
+    </a>
+
+    <a href="/competitions" class="card" style="text-align: center; padding: 40px 20px; transition: transform 0.3s; text-decoration: none;">
+      <i class="fas fa-trophy" style="font-size: 3rem; color: #ec4899; margin-bottom: 20px;"></i>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Compete</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Win hackathons and hiring challenges.</p>
+    </a>
+
+    <a href="/jobs" class="card" style="text-align: center; padding: 40px 20px; transition: transform 0.3s; text-decoration: none;">
+      <i class="fas fa-briefcase" style="font-size: 3rem; color: #3b82f6; margin-bottom: 20px;"></i>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 10px;">Jobs</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Apply for top internships & placements.</p>
+    </a>
+
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-header">
+    <h2>Featured Competitions & Hackathons</h2>
+    <a href="/competitions" class="btn btn-outline">View All</a>
+  </div>
+  <div class="cards-grid">
+    <% if (!competitions || competitions.length === 0) { %>
+      <p class="empty-msg" style="grid-column: 1/-1;">No competitions currently active. <a href="/competitions/create" style="color: var(--primary);">Create one!</a></p>
+    <% } else { %>
+      <% competitions.forEach(c => { %>
+      <div class="card">
+        <% if (c.banner) { %><img src="<%= c.banner %>" class="card-banner" alt="banner"><% } else { %>
+        <div class="card-banner-placeholder"><i class="fas fa-code"></i></div><% } %>
+        <div class="card-body">
+          <span class="badge badge-<%= c.type %>"><%= c.type %></span>
+          <h3 class="card-title"><%= c.title %></h3>
+          <p class="card-desc"><%= c.description.substring(0, 100) %>...</p>
+          <div class="card-meta">
+            <span><i class="fas fa-users"></i> Team: <%= c.teamSize.min %>-<%= c.teamSize.max %></span>
+            <span><i class="fas fa-calendar"></i> <%= c.registrationDeadline ? new Date(c.registrationDeadline).toLocaleDateString() : 'Open' %></span>
+          </div>
+          <% if (c.prizes && c.prizes.length) { %>
+          <div class="prize-tag"><i class="fas fa-medal"></i> Prize: <%= c.prizes[0].amount %></div>
+          <% } %>
+          <a href="/competitions/<%= c._id %>" class="btn btn-primary btn-sm btn-full" style="margin-top:auto">View Details</a>
+        </div>
+      </div>
+      <% }) %>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>Latest Jobs & Internships</h2>
+    <a href="/jobs" class="btn btn-outline">View All</a>
+  </div>
+  <div class="jobs-list">
+    <% if (!jobs || jobs.length === 0) { %>
+      <p class="empty-msg">No jobs posted yet.</p>
+    <% } else { %>
+      <% jobs.forEach(j => { %>
+      <div class="job-card">
+        <div class="job-info">
+          <h3><%= j.title %></h3>
+          <p class="company"><i class="fas fa-building"></i> <%= j.company %></p>
+          <div class="job-tags">
+            <span class="badge"><%= j.type %></span>
+            <span class="badge badge-location"><i class="fas fa-map-marker-alt"></i> <%= j.location %></span>
+            <% if (j.salary !== 'Not disclosed') { %><span class="badge badge-salary"><i class="fas fa-rupee-sign"></i> <%= j.salary %></span><% } %>
+          </div>
+        </div>
+        <a href="/jobs/<%= j._id %>" class="btn btn-outline btn-sm">Apply Now</a>
+      </div>
+      <% }) %>
+    <% } %>
+  </div>
+</section>
+
+<section class="section cta-section">
+  <div class="cta-content">
+    <h2>Are you an organizer or mentor?</h2>
+    <p>Join HackHub to post competitions, start an exclusive course, or mentor bright minds.</p>
+    <a href="/auth/register" class="btn btn-primary btn-lg">Join the Network</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

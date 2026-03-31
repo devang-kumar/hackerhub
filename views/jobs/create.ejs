@@ -1,0 +1,64 @@
+<%- include('../partials/header', { title: 'Post a Job', error: messages.error }) %>
+
+<div class="page-container">
+  <div class="form-page">
+    <h1>Post a Job / Internship</h1>
+    <form action="/jobs/create" method="POST" enctype="multipart/form-data" class="form">
+      <div class="form-section">
+        <h3>Job Details</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Job Title *</label>
+            <input type="text" name="title" placeholder="e.g. Frontend Developer" required/>
+          </div>
+          <div class="form-group">
+            <label>Company Name *</label>
+            <input type="text" name="company" placeholder="e.g. TechCorp" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Job Description *</label>
+          <textarea name="description" rows="6" placeholder="Describe the role, responsibilities..." required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type *</label>
+            <select name="type">
+              <option value="full-time">Full Time</option>
+              <option value="part-time">Part Time</option>
+              <option value="internship">Internship</option>
+              <option value="contract">Contract</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" placeholder="Remote / City"/>
+          </div>
+          <div class="form-group">
+            <label>Salary / Stipend</label>
+            <input type="text" name="salary" placeholder="e.g. ₹30,000/month"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Required Skills (comma separated)</label>
+          <input type="text" name="skills" placeholder="React, Node.js, Python..."/>
+        </div>
+        <div class="form-group">
+          <label>Eligibility</label>
+          <input type="text" name="eligibility" placeholder="e.g. B.Tech CS students"/>
+        </div>
+        <div class="form-group">
+          <label>Application Deadline</label>
+          <input type="date" name="applyDeadline"/>
+        </div>
+        <div class="form-group">
+          <label>Banner Image</label>
+          <input type="file" name="banner" accept="image/*"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Post Job</button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

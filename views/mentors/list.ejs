@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<div class="page-container">
+  <div class="page-hero">
+    <h1>1-on-1 Mentorship</h1>
+    <p>Book sessions with industry experts to accelerate your career.</p>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-form">
+      <h3>Top Mentors</h3>
+    </div>
+    <% if (session.userId) { %>
+      <a href="/mentors/create" class="btn btn-outline"><i class="fas fa-chalkboard-teacher"></i> Become a Mentor</a>
+    <% } %>
+  </div>
+
+  <div class="cards-grid">
+    <% if (mentors.length === 0) { %>
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <i class="fas fa-users-slash"></i>
+        <p>No mentors available right now.</p>
+      </div>
+    <% } %>
+    <% mentors.forEach(m => { %>
+    <div class="card" style="align-items: center; text-align: center;">
+      <div class="avatar-circle" style="margin-top: 30px; width: 80px; height: 80px; font-size: 2rem;">
+        <%= m.user.name.charAt(0) %>
+      </div>
+      <div class="card-body" style="width: 100%;">
+        <h3 class="card-title" style="margin-bottom: 4px;"><%= m.user.name %></h3>
+        <p class="company" style="justify-content: center;"><i class="fas fa-briefcase"></i> <%= m.domain %></p>
+        
+        <div class="card-meta" style="justify-content: center; margin-top: 10px;">
+          <span><i class="fas fa-star" style="color: #fbbf24;"></i> <%= m.rating %></span>
+          <span><i class="fas fa-video"></i> <%= m.sessionsCompleted %> Sessions</span>
+        </div>
+        
+        <div class="skills-row" style="justify-content: center; margin-bottom: 20px;">
+          <% m.expertise.slice(0,3).forEach(skill => { %>
+            <span class="skill-chip"><%= skill %></span>
+          <% }) %>
+        </div>
+
+        <div class="card-footer" style="flex-direction: column; gap: 10px;">
+          <div class="prize-tag" style="margin: 0;"><%= m.pricePerHour > 0 ? '₹' + m.pricePerHour + '/hr' : 'Free' %></div>
+          <a href="/mentors/<%= m._id %>" class="btn btn-primary btn-full">View Profile</a>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

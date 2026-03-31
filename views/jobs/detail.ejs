@@ -1,0 +1,94 @@
+<%- include('../partials/header', { title: job.title, error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <div class="detail-layout">
+    <div class="detail-main">
+      <div class="detail-header">
+        <div class="company-logo-lg"><%= job.company.charAt(0) %></div>
+        <div>
+          <h1><%= job.title %></h1>
+          <p class="company"><i class="fas fa-building"></i> <%= job.company %></p>
+          <div class="job-tags">
+            <span class="badge"><%= job.type %></span>
+            <span class="badge"><i class="fas fa-map-marker-alt"></i> <%= job.location %></span>
+            <% if (job.salary !== 'Not disclosed') { %><span class="badge"><i class="fas fa-rupee-sign"></i> <%= job.salary %></span><% } %>
+            <% if (job.assessmentId) { %><span class="badge badge-exam"><i class="fas fa-clipboard-check"></i> Online Assessment Required</span><% } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>Job Description</h3>
+        <p><%= job.description %></p>
+      </div>
+
+      <% if (job.eligibility) { %>
+      <div class="content-section">
+        <h3>Eligibility</h3>
+        <p><%= job.eligibility %></p>
+      </div>
+      <% } %>
+
+      <% if (job.skills.length) { %>
+      <div class="content-section">
+        <h3>Required Skills</h3>
+        <div class="skills-row">
+          <% job.skills.forEach(s => { %><span class="skill-chip"><%= s %></span><% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="content-section">
+        <h3>Apply for this Position</h3>
+        <% if (!session || !session.userId) { %>
+          <p><a href="/auth/login">Login</a> to apply for this job.</p>
+        <% } else if (applied) { %>
+          <div class="already-registered">
+            <i class="fas fa-check-circle"></i>
+            <p>You've already applied for this position.</p>
+            <a href="/jobs/my-applications" class="btn btn-outline">View My Applications</a>
+          </div>
+        <% } else { %>
+          <form action="/jobs/<%= job._id %>/apply" method="POST" enctype="multipart/form-data" class="form">
+            <div class="form-group">
+              <label>Resume / CV *</label>
+              <input type="file" name="resume" accept=".pdf,.doc,.docx" required/>
+            </div>
+            <div class="form-group">
+              <label>Cover Letter</label>
+              <textarea name="coverLetter" rows="5" placeholder="Why are you a great fit for this role?"></textarea>
+            </div>
+            <% if (job.assessmentId) { %>
+            <div class="assessment-notice">
+              <i class="fas fa-info-circle"></i>
+              <p>This job requires an online assessment. After applying, you'll be redirected to take the proctored exam.</p>
+            </div>
+            <% } %>
+            <button type="submit" class="btn btn-primary">Submit Application</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="info-card">
+        <h4>Job Details</h4>
+        <div class="info-row"><i class="fas fa-briefcase"></i><span>Type</span><strong><%= job.type %></strong></div>
+        <div class="info-row"><i class="fas fa-map-marker-alt"></i><span>Location</span><strong><%= job.location %></strong></div>
+        <div class="info-row"><i class="fas fa-rupee-sign"></i><span>Salary</span><strong><%= job.salary %></strong></div>
+        <% if (job.applyDeadline) { %>
+        <div class="info-row"><i class="fas fa-clock"></i><span>Apply By</span><strong><%= new Date(job.applyDeadline).toLocaleDateString() %></strong></div>
+        <% } %>
+        <div class="info-row"><i class="fas fa-users"></i><span>Applications</span><strong><%= job.applications.length %></strong></div>
+      </div>
+      <% if (session && session.userId && job.organizer._id.toString() === session.userId.toString()) { %>
+      <div class="info-card">
+        <h4>Organizer Actions</h4>
+        <a href="/jobs/<%= job._id %>/manage" class="btn btn-primary btn-full">Manage Applications</a>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

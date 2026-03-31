@@ -1,0 +1,51 @@
+<%- include('../partials/header', { title: 'Manage Applications', error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <h1>Applications for: <%= job.title %></h1>
+  <p><%= applications.length %> total applications</p>
+
+  <% if (applications.length === 0) { %>
+    <div class="empty-state"><i class="fas fa-inbox"></i><p>No applications yet</p></div>
+  <% } %>
+
+  <div class="manage-table-wrap">
+    <table class="manage-table">
+      <thead>
+        <tr>
+          <th>Applicant</th>
+          <th>Email</th>
+          <th>Skills</th>
+          <th>Assessment</th>
+          <th>Resume</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% applications.forEach(app => { %>
+        <tr>
+          <td><%= app.applicant.name %></td>
+          <td><%= app.applicant.email %></td>
+          <td><%= app.applicant.skills.slice(0,3).join(', ') %></td>
+          <td><%= app.assessmentCompleted ? app.assessmentScore + ' pts' : 'Not taken' %></td>
+          <td><a href="<%= app.resume %>" target="_blank" class="btn btn-outline btn-sm">View</a></td>
+          <td><span class="badge badge-<%= app.status %>"><%= app.status %></span></td>
+          <td>
+            <form action="/jobs/applications/<%= app._id %>/status" method="POST" style="display:flex;gap:5px">
+              <select name="status">
+                <option value="applied" <%= app.status==='applied'?'selected':'' %>>Applied</option>
+                <option value="shortlisted" <%= app.status==='shortlisted'?'selected':'' %>>Shortlisted</option>
+                <option value="rejected" <%= app.status==='rejected'?'selected':'' %>>Rejected</option>
+                <option value="hired" <%= app.status==='hired'?'selected':'' %>>Hired</option>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

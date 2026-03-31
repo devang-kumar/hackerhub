@@ -1,0 +1,26 @@
+<%- include('../partials/header', { title: 'My Applications' }) %>
+
+<div class="page-container">
+  <h1>My Applications</h1>
+  <% if (applications.length === 0) { %>
+    <div class="empty-state"><i class="fas fa-file-alt"></i><p>No applications yet. <a href="/jobs">Browse Jobs</a></p></div>
+  <% } %>
+  <div class="applications-list">
+    <% applications.forEach(app => { %>
+    <div class="app-card">
+      <div class="app-info">
+        <h3><%= app.job ? app.job.title : 'Job Deleted' %></h3>
+        <p><%= app.job ? app.job.company : '' %></p>
+        <span class="badge badge-<%= app.status %>"><%= app.status %></span>
+        <% if (app.assessmentCompleted) { %><span class="badge badge-exam">Assessment: <%= app.assessmentScore %> pts</span><% } %>
+      </div>
+      <div class="app-meta">
+        <p>Applied: <%= new Date(app.appliedAt).toLocaleDateString() %></p>
+        <% if (app.job) { %><a href="/jobs/<%= app.job._id %>" class="btn btn-outline btn-sm">View Job</a><% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

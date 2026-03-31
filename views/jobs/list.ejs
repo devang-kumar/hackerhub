@@ -1,0 +1,59 @@
+<%- include('../partials/header', { title: 'Jobs & Internships', error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <div class="page-hero">
+    <h1>Jobs & Internships</h1>
+    <p>Find opportunities that match your skills and aspirations</p>
+  </div>
+
+  <div class="filter-bar">
+    <form action="/jobs" method="GET" class="filter-form">
+      <input type="text" name="search" placeholder="Search jobs, companies..." value="<%= query.search || '' %>"/>
+      <select name="type">
+        <option value="">All Types</option>
+        <option value="full-time" <%= query.type === 'full-time' ? 'selected' : '' %>>Full Time</option>
+        <option value="part-time" <%= query.type === 'part-time' ? 'selected' : '' %>>Part Time</option>
+        <option value="internship" <%= query.type === 'internship' ? 'selected' : '' %>>Internship</option>
+        <option value="contract" <%= query.type === 'contract' ? 'selected' : '' %>>Contract</option>
+      </select>
+      <input type="text" name="location" placeholder="Location..." value="<%= query.location || '' %>"/>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/jobs" class="btn btn-outline">Clear</a>
+    </form>
+    <% if (session && session.userId) { %>
+      <a href="/jobs/create" class="btn btn-primary"><i class="fas fa-plus"></i> Post Job</a>
+    <% } %>
+  </div>
+
+  <div class="jobs-full-list">
+    <% if (jobs.length === 0) { %>
+      <div class="empty-state"><i class="fas fa-briefcase"></i><p>No jobs found</p></div>
+    <% } %>
+    <% jobs.forEach(j => { %>
+    <div class="job-card-full">
+      <div class="job-left">
+        <div class="company-logo"><%= j.company.charAt(0) %></div>
+        <div class="job-details">
+          <h3><a href="/jobs/<%= j._id %>"><%= j.title %></a></h3>
+          <p class="company"><i class="fas fa-building"></i> <%= j.company %></p>
+          <div class="job-tags">
+            <span class="badge"><%= j.type %></span>
+            <span class="badge"><i class="fas fa-map-marker-alt"></i> <%= j.location %></span>
+            <% if (j.salary !== 'Not disclosed') { %><span class="badge"><i class="fas fa-rupee-sign"></i> <%= j.salary %></span><% } %>
+            <% if (j.assessmentId) { %><span class="badge badge-exam"><i class="fas fa-clipboard-check"></i> Has Assessment</span><% } %>
+          </div>
+          <div class="skills-row">
+            <% j.skills.slice(0,4).forEach(s => { %><span class="skill-chip"><%= s %></span><% }) %>
+          </div>
+        </div>
+      </div>
+      <div class="job-right">
+        <% if (j.applyDeadline) { %><p class="deadline"><i class="fas fa-clock"></i> Apply by <%= new Date(j.applyDeadline).toLocaleDateString() %></p><% } %>
+        <a href="/jobs/<%= j._id %>" class="btn btn-primary btn-sm">Apply Now</a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

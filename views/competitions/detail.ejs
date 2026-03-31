@@ -1,0 +1,136 @@
+<%- include('../partials/header', { title: competition.title, error: messages.error, success: messages.success }) %>
+
+<div class="page-container">
+  <div class="detail-layout">
+    <div class="detail-main">
+      <% if (competition.banner) { %><img src="<%= competition.banner %>" class="detail-banner" alt="banner"><% } %>
+      <div class="detail-header">
+        <div class="detail-badges">
+          <span class="badge badge-<%= competition.type %>"><%= competition.type %></span>
+          <span class="badge badge-mode"><%= competition.mode %></span>
+          <span class="badge badge-<%= competition.status %>"><%= competition.status %></span>
+        </div>
+        <h1><%= competition.title %></h1>
+        <p class="organizer-info">By <strong><%= competition.organizer.name %></strong></p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+        <button class="tab-btn" onclick="showTab('prizes')">Prizes</button>
+        <button class="tab-btn" onclick="showTab('stages')">Stages</button>
+        <button class="tab-btn" onclick="showTab('register')">Register</button>
+      </div>
+
+      <div id="tab-overview" class="tab-content active">
+        <h3>About this Competition</h3>
+        <p><%= competition.description %></p>
+        <h3>Eligibility</h3>
+        <p><%= competition.eligibility %></p>
+        <% if (competition.tags.length) { %>
+        <div class="tags-row">
+          <% competition.tags.forEach(t => { %><span class="tag">#<%= t %></span><% }) %>
+        </div>
+        <% } %>
+      </div>
+
+      <div id="tab-prizes" class="tab-content">
+        <h3>Prize Pool</h3>
+        <% if (competition.prizes.length === 0) { %>
+          <p>No prizes listed yet.</p>
+        <% } else { %>
+        <div class="prizes-grid">
+          <% competition.prizes.forEach((p, i) => { %>
+          <div class="prize-card prize-<%= i+1 %>">
+            <div class="prize-icon"><i class="fas fa-<%= i===0?'trophy':i===1?'medal':'award' %>"></i></div>
+            <h4><%= p.position %></h4>
+            <div class="prize-amount"><%= p.amount %></div>
+            <p><%= p.description %></p>
+          </div>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+
+      <div id="tab-stages" class="tab-content">
+        <h3>Competition Stages</h3>
+        <% if (competition.stages.length === 0) { %>
+          <p>No stages defined yet.</p>
+        <% } else { %>
+        <div class="stages-timeline">
+          <% competition.stages.forEach((s, i) => { %>
+          <div class="stage-item">
+            <div class="stage-num"><%= i+1 %></div>
+            <div class="stage-info">
+              <h4><%= s.title %></h4>
+              <p><%= s.description %></p>
+              <span class="stage-dates"><i class="fas fa-calendar"></i> <%= s.startDate ? new Date(s.startDate).toLocaleDateString() : '' %> - <%= s.endDate ? new Date(s.endDate).toLocaleDateString() : '' %></span>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+
+      <div id="tab-register" class="tab-content">
+        <% if (!session || !session.userId) { %>
+          <div class="login-prompt">
+            <p>Please <a href="/auth/login">login</a> to register for this competition.</p>
+          </div>
+        <% } else if (userTeam) { %>
+          <div class="already-registered">
+            <i class="fas fa-check-circle"></i>
+            <h3>You're registered!</h3>
+            <p>Team: <strong><%= userTeam.name %></strong></p>
+            <h4>Team Members</h4>
+            <ul class="members-list">
+              <% userTeam.members.forEach(m => { %>
+              <li>
+                <i class="fas fa-user"></i>
+                <%= m.user ? m.user.name : m.email %>
+                <span class="badge badge-<%= m.status %>"><%= m.status %></span>
+              </li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } else { %>
+          <h3>Register for this Competition</h3>
+          <form action="/competitions/<%= competition._id %>/register" method="POST" class="form">
+            <div class="form-group">
+              <label>Team Name</label>
+              <input type="text" name="teamName" placeholder="Enter your team name" required/>
+            </div>
+            <div class="form-group">
+              <label>Invite Team Members (comma-separated emails)</label>
+              <input type="text" name="memberEmails" placeholder="friend1@email.com, friend2@email.com"/>
+              <small>They'll receive an email invitation to join your team</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Register & Send Invites</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="info-card">
+        <h4>Quick Info</h4>
+        <div class="info-row"><i class="fas fa-calendar-plus"></i><span>Registration Deadline</span><strong><%= competition.registrationDeadline ? new Date(competition.registrationDeadline).toLocaleDateString() : 'Open' %></strong></div>
+        <div class="info-row"><i class="fas fa-play"></i><span>Start Date</span><strong><%= competition.startDate ? new Date(competition.startDate).toLocaleDateString() : 'TBD' %></strong></div>
+        <div class="info-row"><i class="fas fa-flag-checkered"></i><span>End Date</span><strong><%= competition.endDate ? new Date(competition.endDate).toLocaleDateString() : 'TBD' %></strong></div>
+        <div class="info-row"><i class="fas fa-users"></i><span>Team Size</span><strong><%= competition.teamSize.min %> - <%= competition.teamSize.max %></strong></div>
+        <div class="info-row"><i class="fas fa-laptop"></i><span>Mode</span><strong><%= competition.mode %></strong></div>
+        <div class="info-row"><i class="fas fa-user-check"></i><span>Registered</span><strong><%= competition.registrations.length %> teams</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+<%- include('../partials/footer') %>
